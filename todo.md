@@ -39,3 +39,10 @@
 - [x] Add service-worker caching, manifest metadata, and offline-ready status language.
 - [x] Validate memory warning entry states, direct hero opening handoff, app-shell cache bundle, responsive behavior, typecheck, and production build.
 - [ ] Save and report the local-readiness enhancement.
+
+## Light-Mode Surface Correction
+
+- [x] Audit current light-mode selectors and dark utility surfaces.
+- [x] Apply paper-white card, panel, row, thumbnail, and status treatments with accessible ink text.
+- [x] Validate light mode across desktop and mobile homepage, workbench, card, and status views.
+- [ ] Save and report the light-mode correction.
