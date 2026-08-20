@@ -8,6 +8,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { DocumentSessionProvider } from "./contexts/DocumentSessionContext";
+import { DensityProvider } from "./contexts/DensityContext";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
@@ -26,5 +27,5 @@ function ThemedApp() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><DocumentSessionProvider><ThemedApp /></DocumentSessionProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><DensityProvider><DocumentSessionProvider><ThemedApp /></DocumentSessionProvider></DensityProvider></ThemeProvider></ErrorBoundary>;
 }

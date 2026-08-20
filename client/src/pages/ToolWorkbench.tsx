@@ -36,6 +36,8 @@ import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "r
 import { toast } from "sonner";
 import { Link, useRoute } from "wouter";
 import { useDocumentSession } from "@/contexts/DocumentSessionContext";
+import DensityControl from "@/components/DensityControl";
+import { useDensity } from "@/contexts/DensityContext";
 
 type LoadedFile = { file: File; name: string; size: number; pages?: number; kind: "pdf" | "image" };
 type Result = { bytes: Uint8Array; name: string; mime: string; label: string };
@@ -117,6 +119,7 @@ export default function ToolWorkbench() {
   const [preflightAcknowledged, setPreflightAcknowledged] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { consumeFiles } = useDocumentSession();
+  const { density } = useDensity();
 
   if (!tool) return <UnknownTool />;
   const mode = stateCopy(tool);
@@ -293,11 +296,11 @@ export default function ToolWorkbench() {
 
   return (
     <SiteShell>
-      <main className="bg-[#07090d]">
+      <main className={`bg-[#07090d] density-${density}`}>
         <section className="border-b border-white/[0.08] bg-[#090c11]">
           <div className="container py-7">
             <Link href="/tools" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-[#7fe3f9] hover:text-white"><ArrowLeft className="h-3.5 w-3.5" /> CachePDF workbench</Link>
-            <div className="mt-7 grid gap-7 md:grid-cols-[1fr_auto] md:items-end"><div><div className="section-kicker">{tool.category}</div><div className="mt-5 flex items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] border border-[#05c8f6]/25 bg-[#05c8f6]/10 text-[#82e7fb]"><ToolGlyph name={tool.icon} className="h-6 w-6" /></span><div><h1 className="font-display text-4xl font-semibold tracking-[-0.065em] text-white sm:text-5xl">{tool.name}</h1><p className="mt-3 max-w-2xl text-base leading-7 text-[#9da9ba]">{tool.description}</p></div></div></div><div className={`mode-badge mode-${mode.tone}`}><LockKeyhole className="h-4 w-4" /><div><p>{mode.label}</p><span>{mode.text}</span></div></div></div>
+            <div className="mt-7 grid gap-7 md:grid-cols-[1fr_auto] md:items-end"><div><div className="section-kicker">{tool.category}</div><div className="mt-5 flex items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] border border-[#05c8f6]/25 bg-[#05c8f6]/10 text-[#82e7fb]"><ToolGlyph name={tool.icon} className="h-6 w-6" /></span><div><h1 className="font-display text-4xl font-semibold tracking-[-0.065em] text-white sm:text-5xl">{tool.name}</h1><p className="mt-3 max-w-2xl text-base leading-7 text-[#9da9ba]">{tool.description}</p></div></div></div><div className="flex flex-wrap items-end gap-3"><DensityControl compact /><div className={`mode-badge mode-${mode.tone}`}><LockKeyhole className="h-4 w-4" /><div><p>{mode.label}</p><span>{mode.text}</span></div></div></div></div>
           </div>
         </section>
         <section className="container grid gap-7 py-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:py-14">

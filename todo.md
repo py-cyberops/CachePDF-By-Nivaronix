@@ -46,3 +46,19 @@
 - [x] Apply paper-white card, panel, row, thumbnail, and status treatments with accessible ink text.
 - [x] Validate light mode across desktop and mobile homepage, workbench, card, and status views.
 - [ ] Save and report the light-mode correction.
+
+## Brand, System Theme, and Density Refinement
+
+- [x] Audit supplied CachePDF SVG composition and remove duplicate inline brand attribution.
+- [x] Add explicit light, dark, and system theme preferences with OS synchronization.
+- [x] Use the correct pre-composed logo asset in each header/footer theme context.
+- [x] Add persistent comfortable and compact density controls for workbench card layouts.
+- [ ] Validate logo contrast, system-theme switching, density responsiveness, typecheck, and production build.
+- [ ] Save and report the refinement release.
+
+## Local-Session Modal Containment Fix
+
+- [x] Inspect the modal’s status rows and offline-message layout for overflow or invalid width behavior.
+- [x] Constrain and restyle the modal content for desktop and mobile containment.
+- [x] Validate the trust modal’s local, account, original, and offline-state content on desktop and mobile.
+- [ ] Save and report the modal correction.

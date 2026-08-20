@@ -173,6 +173,35 @@ button:active, .button-primary:active, .button-secondary:active { transform: sca
   .local-session-control { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid rgba(5,200,246,.24); border-radius: 999px; background: rgba(5,200,246,.055); padding: .48rem .72rem; font-family: "IBM Plex Mono", monospace; font-size: .6rem; letter-spacing: .12em; color: #80e5f9; transition: border-color 180ms cubic-bezier(.23,1,.32,1), background-color 180ms cubic-bezier(.23,1,.32,1); }
   .local-session-control:hover { border-color: rgba(5,200,246,.55); background: rgba(5,200,246,.11); }
   .local-session-compact { padding: .48rem .58rem; font-size: .54rem; }
+  .theme-menu { position: absolute; right: 0; top: calc(100% + .45rem); z-index: 80; display: grid; min-width: 8.2rem; overflow: hidden; border: 1px solid rgba(255,255,255,.13); border-radius: .7rem; background: #10161e; padding: .28rem; box-shadow: 0 16px 36px rgba(0,0,0,.26); }
+  .theme-menu button { display: flex; align-items: center; gap: .5rem; border-radius: .45rem; padding: .52rem .6rem; text-align: left; font-family: "IBM Plex Mono", monospace; font-size: .62rem; letter-spacing: .06em; color: #bac6d3; }
+  .theme-menu button:hover, .theme-menu .theme-option-active { background: rgba(5,200,246,.11); color: #86e5f8; }
+  .theme-light .theme-menu { border-color: rgba(24,46,63,.16); background: #ffffff; box-shadow: 0 14px 30px rgba(42,68,89,.15); }
+  .theme-light .theme-menu button { color: #3d5061; }
+  .theme-light .theme-menu button:hover, .theme-light .theme-menu .theme-option-active { background: rgba(5,200,246,.11); color: #057d9d; }
+  .theme-mobile-active { border-color: rgba(5,200,246,.6) !important; background: rgba(5,200,246,.10) !important; color: #58dffb !important; }
+  .density-control { display: inline-flex; align-items: center; gap: .18rem; border: 1px solid rgba(255,255,255,.11); border-radius: .6rem; background: rgba(255,255,255,.025); padding: .22rem; }
+  .density-label { padding: 0 .35rem; font-family: "IBM Plex Mono", monospace; font-size: .56rem; letter-spacing: .1em; text-transform: uppercase; color: #8491a3; }
+  .density-control button { display: inline-flex; align-items: center; gap: .32rem; border-radius: .42rem; padding: .38rem .46rem; font-family: "IBM Plex Mono", monospace; font-size: .56rem; letter-spacing: .05em; color: #91a0b1; }
+  .density-control .density-active { background: rgba(5,200,246,.12); color: #83e6f8; }
+  .density-control-compact button { padding: .38rem; }
+  .theme-light .density-control { border-color: rgba(24,46,63,.15); background: #ffffff; }
+  .theme-light .density-label, .theme-light .density-control button { color: #526273; }
+  .theme-light .density-control .density-active { background: rgba(5,200,246,.12); color: #057d9d; }
+  .local-session-modal { max-height: calc(100dvh - 1.5rem); overscroll-behavior: contain; }
+  .theme-light .local-session-overlay { background: rgba(26,45,60,.24); }
+  .theme-light .local-session-modal { background: linear-gradient(145deg, #ffffff, #f1f6f8); }
+  .theme-light .local-session-modal .section-kicker { color: #057d9d; }
+  .theme-light .local-session-modal [class~="text-white"] { color: #152431 !important; }
+  .theme-light .local-session-modal [class~="text-[#9eabbc]"], .theme-light .local-session-modal [class~="text-[#8491a3]"] { color: #526273 !important; }
+  .theme-light .local-session-modal [class~="text-[#70dff8]"], .theme-light .local-session-modal [class~="text-[#9ed7e6]"] { color: #057d9d !important; }
+  .density-compact .tool-card { min-height: 146px !important; padding: 1rem !important; }
+  .density-compact .tool-card h2 { margin-top: 1rem !important; }
+  .density-compact .tool-card p { margin-top: .38rem !important; line-height: 1.35 !important; }
+  .density-compact .tool-card > span:last-child { margin-top: .85rem !important; }
+  .density-compact .page-thumbnail-grid { gap: .5rem; }
+  .density-compact .page-thumbnail { padding: .34rem; }
+  .density-compact .page-manager { margin-top: 1.25rem; padding-top: 1.25rem; }
   .theme-light .local-session-control { border-color: rgba(5,130,162,.28); background: rgba(5,200,246,.07); color: #087895; }
   .theme-light .page-thumbnail { border-color: rgba(24,46,63,.16); background: #ffffff; box-shadow: 0 5px 16px rgba(42,68,89,.07); }
   .theme-light .page-thumbnail:hover { border-color: rgba(5,130,162,.5); background: #f8fcfd; }
