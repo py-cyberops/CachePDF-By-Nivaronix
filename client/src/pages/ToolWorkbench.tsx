@@ -16,6 +16,7 @@ import {
   ArrowRight,
   ArrowUp,
   Check,
+  CircleStop,
   Clipboard,
   Download,
   FilePlus2,
@@ -62,10 +63,26 @@ function parsePages(raw: string, total: number) {
     const [startText, endText] = part.split("-").map((value) => value.trim());
     const start = Number(startText); const end = endText ? Number(endText) : start;
     if (!Number.isInteger(start) || !Number.isInteger(end)) throw new Error("Use page numbers like 1, 3-5, or 8.");
-    const lower = Math.max(1, Math.min(start, end)); const upper = Math.min(total, Math.max(start, end));
+    if (start < 1 || end < 1 || start > total || end > total) throw new Error(`Page numbers must be between 1 and ${total}.`);
+    const lower = Math.min(start, end); const upper = Math.max(start, end);
     for (let page = lower; page <= upper; page += 1) pages.push(page);
   });
   return Array.from(new Set(pages));
+}
+
+function safeArchiveStem(fileName: string) {
+  const stem = fileName.replace(/\.pdf$/i, "").replace(/[\\/:*?"<>|]/g, "_").replace(/^\.+/, "").trim();
+  return stem || "document";
+}
+
+function processingError(error: unknown, cancelled: boolean) {
+  if (cancelled) return { title: "Local action stopped", detail: "Original unchanged. You can select fewer pages or try again when your device is ready." };
+  const raw = error instanceof Error ? error.message : "";
+  if (/password|encrypted/i.test(raw)) return { title: "This PDF is password protected", detail: "CachePDF cannot currently process password-protected PDFs. Original unchanged." };
+  if (/memory|allocation|out of memory/i.test(raw)) return { title: "The browser ran out of available memory", detail: "No changes were made to your original file. Try fewer pages or a smaller document." };
+  if (/page numbers must|use page numbers|select at least|keep at least/i.test(raw)) return { title: "Review the page selection", detail: raw };
+  if (/could not be opened|invalid|malformed|parse/i.test(raw)) return { title: "This PDF could not be processed", detail: "The file may be malformed or unsupported. Original unchanged." };
+  return { title: "Local export could not complete", detail: "Original unchanged. Try again or select fewer pages." };
 }
 
 function saveDownload(result: Result) {
@@ -118,6 +135,8 @@ export default function ToolWorkbench() {
   const [imageQuality, setImageQuality] = useState(86);
   const [preflightAcknowledged, setPreflightAcknowledged] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cancelRequested = useRef(false);
+  const activeOcrWorker = useRef<{ terminate: () => Promise<unknown> } | null>(null);
   const { consumeFiles } = useDocumentSession();
   const { density } = useDensity();
 
@@ -140,6 +159,13 @@ export default function ToolWorkbench() {
     setOcrProgress("");
   }
 
+  function throwIfCancelled() { if (cancelRequested.current) throw new Error("CACHEPDF_OPERATION_CANCELLED"); }
+  function cancelProcessing() {
+    cancelRequested.current = true;
+    void activeOcrWorker.current?.terminate().catch(() => undefined);
+    toast.message("Stopping local action", { description: "The original document remains unchanged." });
+  }
+
   function resetPageState(total: number) {
     setPageOrder(Array.from({ length: total }, (_, index) => index + 1));
     setSelectedPages([]);
@@ -160,7 +186,7 @@ export default function ToolWorkbench() {
       const record: LoadedFile = { file, name: file.name, size: file.size, kind: image ? "image" : "pdf" };
       if (pdf) {
         try { const pdfDocument = await PDFDocument.load(await file.arrayBuffer()); record.pages = pdfDocument.getPageCount(); }
-        catch { toast.error(`${file.name} could not be opened as a PDF.`); continue; }
+        catch (error) { const message = processingError(error, false); toast.error(message.title, { description: message.detail }); continue; }
       }
       accepted.push(record);
     }
@@ -200,21 +226,26 @@ export default function ToolWorkbench() {
   async function exportImages(file: File, pages: number[]) {
     const document = await loadBrowserPdf(file);
     const archiveEntries: Record<string, Uint8Array> = {};
-    const basename = file.name.replace(/\.pdf$/i, "") || "document";
-    for (let index = 0; index < pages.length; index += 1) {
-      const pageNumber = pages[index];
-      setOcrProgress(`Rendering page ${index + 1} of ${pages.length}`);
-      const blob = await renderPdfPageToImage(document, pageNumber, Number(exportScale), imageFormat, imageQuality / 100);
-      archiveEntries[`${basename}-page-${String(pageNumber).padStart(2, "0")}.${imageFormat}`] = new Uint8Array(await blob.arrayBuffer());
-    }
-    return { bytes: zipSync(archiveEntries, { level: 6 }), name: `${basename}-${imageFormat}-images.zip`, mime: "application/zip", label: `${pages.length} ${imageFormat.toUpperCase()} pages ready to export` };
+    const basename = safeArchiveStem(file.name);
+    try {
+      for (let index = 0; index < pages.length; index += 1) {
+        throwIfCancelled();
+        const pageNumber = pages[index];
+        setOcrProgress(`Rendering page ${index + 1} of ${pages.length}`);
+        const blob = await renderPdfPageToImage(document, pageNumber, Number(exportScale), imageFormat, imageQuality / 100);
+        archiveEntries[`${basename}-page-${String(pageNumber).padStart(2, "0")}.${imageFormat}`] = new Uint8Array(await blob.arrayBuffer());
+      }
+      throwIfCancelled();
+      return { bytes: zipSync(archiveEntries, { level: 6 }), name: `${basename}-${imageFormat}-images.zip`, mime: "application/zip", label: `${pages.length} ${imageFormat.toUpperCase()} pages ready to export` };
+    } finally { await document.destroy?.(); }
   }
 
   async function splitIntoIndividualPdfs(file: File, pages: number[]) {
     const source = await PDFDocument.load(await file.arrayBuffer());
     const archiveEntries: Record<string, Uint8Array> = {};
-    const basename = file.name.replace(/\.pdf$/i, "") || "document";
+    const basename = safeArchiveStem(file.name);
     for (let index = 0; index < pages.length; index += 1) {
+      throwIfCancelled();
       const pageNumber = pages[index];
       setOcrProgress(`Creating PDF ${index + 1} of ${pages.length}`);
       const singlePageDocument = await PDFDocument.create();
@@ -222,6 +253,7 @@ export default function ToolWorkbench() {
       singlePageDocument.addPage(page);
       archiveEntries[`${basename}-page-${String(pageNumber).padStart(2, "0")}.pdf`] = await singlePageDocument.save();
     }
+    throwIfCancelled();
     return { bytes: zipSync(archiveEntries, { level: 6 }), name: `${basename}-split-pages.zip`, mime: "application/zip", label: `${pages.length} individual PDFs ready to export` };
   }
 
@@ -229,16 +261,19 @@ export default function ToolWorkbench() {
     const document = await loadBrowserPdf(file);
     const { createWorker } = await import("tesseract.js");
     const worker = await createWorker("eng", 1, { logger: (message) => { if (message.status) setOcrProgress(`${message.status}${typeof message.progress === "number" ? ` · ${Math.round(message.progress * 100)}%` : ""}`); } });
+    activeOcrWorker.current = worker;
     const pagesText: string[] = [];
     try {
       for (let index = 0; index < pages.length; index += 1) {
+        throwIfCancelled();
         const pageNumber = pages[index];
         setOcrProgress(`Preparing page ${index + 1} of ${pages.length}`);
         const image = await renderPdfPageToImage(document, pageNumber, 1.8);
         const { data } = await worker.recognize(image);
+        throwIfCancelled();
         pagesText.push(`Page ${pageNumber}\n${data.text.trim() || "[No readable text detected]"}`);
       }
-    } finally { await worker.terminate(); }
+    } finally { activeOcrWorker.current = null; await worker.terminate().catch(() => undefined); await document.destroy?.(); }
     return pagesText.join("\n\n");
   }
 
@@ -247,6 +282,7 @@ export default function ToolWorkbench() {
     if (!isImplemented || !activeTool) { toast.message("This action is not enabled yet", { description: "CachePDF keeps the route visible but does not claim local processing support before it is ready." }); return; }
     if (!enoughFiles) { toast.error(isMerge ? "Open at least two PDF files to merge." : "Open a file to continue."); return; }
     if (preflight && !preflightAcknowledged) { toast.message("Review the local memory preflight", { description: "Confirm the preflight notice before starting this action." }); return; }
+    cancelRequested.current = false;
     setBusy(true); resetResultState();
     try {
       if (needsImages) { setResult(await makeImagePdf()); toast.success("PDF ready to export."); return; }
@@ -274,7 +310,7 @@ export default function ToolWorkbench() {
       } else if (activeTool.slug === "reorder-pages") {
         const next = await PDFDocument.create(); const copied = await next.copyPages(source, pageOrder.map((page) => page - 1)); copied.forEach((page) => next.addPage(page)); output = { bytes: await next.save(), name: "cachepdf-reordered.pdf", mime: "application/pdf", label: "Reordered PDF ready to export" };
       } else if (activeTool.slug === "delete-pages") {
-        Array.from(new Set(selection)).sort((a, b) => b - a).forEach((page) => source.removePage(page - 1)); output = { bytes: await source.save(), name: "cachepdf-pages-deleted.pdf", mime: "application/pdf", label: "PDF ready to export" };
+        if (selection.length >= total) throw new Error("Keep at least one page in the new PDF."); Array.from(new Set(selection)).sort((a, b) => b - a).forEach((page) => source.removePage(page - 1)); output = { bytes: await source.save(), name: "cachepdf-pages-deleted.pdf", mime: "application/pdf", label: "PDF ready to export" };
       } else if (activeTool.slug === "rotate-pages") {
         source.getPages().forEach((page, index) => { const pageNumber = index + 1; const directRotation = pageRotations[pageNumber] ?? 0; const batchRotation = selection.includes(pageNumber) ? Number(rotation) : 0; if (directRotation || batchRotation) page.setRotation(degrees((page.getRotation().angle + directRotation + batchRotation) % 360)); }); output = { bytes: await source.save(), name: "cachepdf-rotated.pdf", mime: "application/pdf", label: "PDF ready to export" };
       } else if (activeTool.slug === "add-page-numbers") {
@@ -285,8 +321,8 @@ export default function ToolWorkbench() {
         source.setTitle(""); source.setAuthor(""); source.setSubject(""); source.setKeywords([]); source.setCreator(""); source.setProducer(""); output = { bytes: await source.save(), name: "cachepdf-metadata-removed.pdf", mime: "application/pdf", label: "Metadata removed locally" };
       } else { throw new Error("This local operation has not been configured."); }
       setResult(output); toast.success(output.label);
-    } catch (error) { toast.error(error instanceof Error ? error.message : "This file could not be processed."); }
-    finally { setBusy(false); }
+    } catch (error) { const message = processingError(error, cancelRequested.current); toast.error(message.title, { description: message.detail }); }
+    finally { activeOcrWorker.current = null; setBusy(false); }
   }
 
   const pageHint = tool.slug === "delete-pages" ? "Pages to remove, e.g. 2, 5-7" : "Pages to use, e.g. 1-3, 5";
@@ -312,6 +348,7 @@ export default function ToolWorkbench() {
           </div></div>
           <aside className="space-y-4"><div className="surface-quiet p-5"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#8793a5]">Processing status</p><div className="mt-5 flex items-start gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#05c8f6]/10 text-[#05c8f6]"><ShieldCheck className="h-4 w-4" /></span><div><p className="text-sm font-medium text-[#e3eaf2]">{mode.label}</p><p className="mt-1 text-xs leading-5 text-[#8491a3]">{mode.text}</p></div></div></div><div className="surface-quiet p-5"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#8793a5]">Original file</p><p className="mt-4 text-sm leading-6 text-[#a5b0c0]">Every completed action creates a fresh output. CachePDF does not overwrite the local source document.</p></div><div className="rounded-[14px] border border-[#05c8f6]/20 bg-[#05c8f6]/[0.055] p-5"><div className="flex gap-3"><Info className="mt-0.5 h-4 w-4 shrink-0 text-[#05c8f6]" /><p className="text-xs leading-5 text-[#a5ddeb]">{busy && ocrProgress ? ocrProgress : "Large local operations can use significant browser memory. Your original remains unchanged if an action cannot complete."}</p></div></div></aside>
         </section>
+        {busy && <section className="container pb-2" aria-live="polite"><div className="flex flex-col justify-between gap-3 rounded-[12px] border border-[#05c8f6]/24 bg-[#05c8f6]/[0.06] p-4 sm:flex-row sm:items-center"><p className="text-sm text-[#a5ddeb]">{ocrProgress || "Processing on this device…"} <span className="text-[#8a9bad]">Original unchanged.</span></p><button type="button" onClick={cancelProcessing} className="button-secondary shrink-0 text-xs"><CircleStop className="h-4 w-4" /> Stop action</button></div></section>}
         {files.length > 0 && <section className="container pb-14"><div className="flex flex-col justify-between gap-4 rounded-[16px] border border-white/[0.1] bg-[#0b1017] p-5 sm:flex-row sm:items-center sm:p-6"><div><p className="font-display text-lg font-medium tracking-[-0.04em] text-white">{readyLabel}</p><p className="mt-1 text-sm text-[#8d99aa]">{result ? "Export the finished local output when you are ready." : ocrText ? "Copy or export the text found in the selected pages." : report.length ? "Review the fields detected in this document." : isImplemented ? "Run this action on this device." : "The file is open, but this action is not enabled yet."}</p></div>{result ? <div className="flex flex-wrap gap-3"><button onClick={() => { setFiles([]); resetResultState(); resetPageState(0); }} className="button-secondary">Open another</button><button onClick={() => saveDownload(result)} className="button-primary"><Download className="h-4 w-4" /> Export {result.mime === "application/zip" ? "files" : "PDF"}</button></div> : ocrText ? <div className="flex flex-wrap gap-3"><button onClick={() => { setFiles([]); resetResultState(); resetPageState(0); }} className="button-secondary">Open another</button><button onClick={() => void navigator.clipboard.writeText(ocrText).then(() => toast.success("OCR text copied."))} className="button-secondary"><Clipboard className="h-4 w-4" /> Copy text</button><button onClick={() => saveText(ocrText)} className="button-primary"><Download className="h-4 w-4" /> Export TXT</button></div> : <button onClick={() => void runTool()} disabled={busy || !enoughFiles} className="button-primary justify-center disabled:cursor-not-allowed disabled:opacity-50">{busy ? <><LoaderCircle className="h-4 w-4 animate-spin" /> {ocrProgress || "Processing on this device"}</> : isImplemented ? <><RotateCw className="h-4 w-4" /> {processLabel}</> : "Action coming soon"}</button>}</div>
           {report.length > 0 && <div className="mt-4 rounded-[14px] border border-white/[0.1] bg-[#0a0e14] p-5"><div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[#05c8f6]" /><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#b6c1d0]">Metadata report</p></div><div className="mt-4 divide-y divide-white/[0.08]">{report.map((line) => { const [label, ...value] = line.split(": "); return <div className="flex gap-4 py-3 text-sm" key={line}><span className="w-20 shrink-0 text-[#7f8d9f]">{label}</span><span className="break-all text-[#dce5ed]">{value.join(": ") || "None found"}</span></div>; })}</div><Link href="/tools/remove-pdf-metadata" className="button-secondary mt-5">Create a metadata-cleaned copy <ArrowRight className="h-4 w-4" /></Link></div>}
           {ocrText && <div className="mt-4 rounded-[14px] border border-[#05c8f6]/20 bg-[#0a0e14] p-5"><div className="flex items-center justify-between gap-4"><div className="flex items-center gap-2"><ScanText className="h-4 w-4 text-[#05c8f6]" /><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#b6c1d0]">Local OCR output</p></div><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7f8d9f]">{ocrText.length.toLocaleString()} characters</span></div><pre className="ocr-output mt-4 max-h-[420px] overflow-auto whitespace-pre-wrap rounded-[10px] border border-white/[0.08] bg-[#06090d] p-4 text-sm leading-6 text-[#dce8ef]">{ocrText}</pre></div>}

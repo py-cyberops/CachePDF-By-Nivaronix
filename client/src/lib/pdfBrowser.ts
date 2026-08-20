@@ -13,6 +13,7 @@ export type BrowserPdfDocument = {
     render: (options: { canvas: HTMLCanvasElement; canvasContext: CanvasRenderingContext2D; viewport: { width: number; height: number } }) => { promise: Promise<void> };
     cleanup: () => void;
   }>;
+  destroy?: () => Promise<void>;
 };
 
 export type RasterImageFormat = "png" | "jpeg" | "webp";
@@ -45,8 +46,8 @@ export async function renderPdfPageToCanvas(
   canvas.height = Math.max(1, Math.floor(viewport.height));
   context.fillStyle = "#ffffff";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  await page.render({ canvas, canvasContext: context, viewport }).promise;
-  page.cleanup();
+  try { await page.render({ canvas, canvasContext: context, viewport }).promise; }
+  finally { page.cleanup(); }
 }
 
 export async function renderPdfPageToImage(
@@ -66,11 +67,13 @@ export async function renderPdfPageToImage(
   canvas.height = Math.max(1, Math.floor(viewport.height));
   context.fillStyle = "#ffffff";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  await page.render({ canvas, canvasContext: context, viewport }).promise;
-  page.cleanup();
+  try { await page.render({ canvas, canvasContext: context, viewport }).promise; }
+  finally { page.cleanup(); }
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob: Blob | null) => {
+      canvas.width = 0;
+      canvas.height = 0;
       if (blob) resolve(blob);
       else reject(new Error(`The page image could not be encoded as ${format.toUpperCase()}.`));
     }, rasterMimeTypes[format], format === "png" ? undefined : quality);

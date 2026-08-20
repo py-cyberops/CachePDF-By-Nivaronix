@@ -1,6 +1,6 @@
 /* CachePDF app-shell service worker. It caches only public application resources; selected files
    are never read, persisted, or transmitted by this worker. */
-const CACHE = "cachepdf-shell-v1";
+const CACHE = "cachepdf-shell-v2";
 const CORE = [
   "/", "/index.html", "/manifest.webmanifest", "/sw.js",
   "/manus-storage/cachepdf-app-icon-cyan_a023b6dd.svg",
@@ -27,15 +27,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener("message", (event) => {
-  if (event.data?.type !== "CACHEPDF_CACHE_URLS") return;
-  const urls = Array.isArray(event.data.urls) ? event.data.urls.filter((url) => typeof url === "string") : [];
-  event.waitUntil(caches.open(CACHE).then((cache) => Promise.all(urls.map(async (url) => {
-    try { const response = await fetch(url, { credentials: "same-origin" }); if (response.ok) await cache.put(url, response.clone()); } catch { /* cache what is available; offline fallbacks remain safe */ }
-  }))));
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith("cachepdf-shell-") && key !== CACHE).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
 });
 
 self.addEventListener("fetch", (event) => {
@@ -48,6 +40,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (url.origin !== self.location.origin) return;
+  const isShellResource = url.pathname.startsWith("/assets/") || url.pathname.startsWith("/manus-storage/") || ["/manifest.webmanifest", "/sw.js"].includes(url.pathname);
+  if (!isShellResource) return;
   event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
     const copy = response.clone(); caches.open(CACHE).then((cache) => cache.put(event.request, copy)); return response;
   })));
