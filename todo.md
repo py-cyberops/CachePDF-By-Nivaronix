@@ -144,3 +144,7 @@
 - [x] Add a side-by-side local preview of original and generated PDF output before export.
 - [x] Validate consent, advisory, preview, result states, and source preservation across lossless and lossy flows.
 - [x] Save and report the compression quality-assurance release.
+- [ ] Review deployment configuration, production command, and canonical-domain requirements for GitHub and Cloudflare handoff.
+- [ ] Add repository documentation and deployment guidance for CachePDF by Nivaronix.
+- [ ] Connect and push the approved project state to github.com/py-cyberops/CachePDF-By-Nivaronix.
+- [ ] Provide the Cloudflare DNS and hosting activation steps for cachepdf.nivaronix.com.
