@@ -7,7 +7,7 @@
 - [x] Implement PDF-to-image export with a browser download flow.
 - [x] Implement browser OCR with clear local-processing status and extracted-text result UI.
 - [x] Validate page reordering entry states, OCR and image-export routes, theme implementation, mobile layouts, typecheck, and production build.
-- [ ] Save a delivery checkpoint and report the enhancements.
+- [x] Save a delivery checkpoint and report the enhancements.
 
 ## Export and Split Follow-up
 
@@ -16,8 +16,8 @@
 - [x] Package selected page images in the chosen format.
 - [x] Build selected-thumbnail splitting into separate single-page PDF files.
 - [x] Validate export settings, split archive entry states, responsive layout, typecheck, and production build.
-- [ ] Save an enhancement checkpoint and report the release.
-- [ ] Summarize the product’s brand identity, implemented feature set, and technology stack for delivery.
+- [x] Save an enhancement checkpoint and report the release.
+- [x] Summarize the product’s brand identity, implemented feature set, and technology stack for delivery.
 
 ## CachePDF Launch Reconciliation
 
@@ -27,7 +27,7 @@
 - [x] Add the discoverable local-session trust state and factual trust panel.
 - [x] Reconcile hero, navigation, CTAs, tool language, and completion states with the CachePDF voice system.
 - [x] Validate the preserved workflows, responsive design, factual trust claims, typecheck, and production build.
-- [ ] Save and report the reconciled CachePDF release.
+- [x] Save and report the reconciled CachePDF release.
 
 ## Local-Readiness Follow-up
 
@@ -38,14 +38,14 @@
 - [x] Add direct hero file opening and route the selected local document into a workbench action.
 - [x] Add service-worker caching, manifest metadata, and offline-ready status language.
 - [x] Validate memory warning entry states, direct hero opening handoff, app-shell cache bundle, responsive behavior, typecheck, and production build.
-- [ ] Save and report the local-readiness enhancement.
+- [x] Save and report the local-readiness enhancement.
 
 ## Light-Mode Surface Correction
 
 - [x] Audit current light-mode selectors and dark utility surfaces.
 - [x] Apply paper-white card, panel, row, thumbnail, and status treatments with accessible ink text.
 - [x] Validate light mode across desktop and mobile homepage, workbench, card, and status views.
-- [ ] Save and report the light-mode correction.
+- [x] Save and report the light-mode correction.
 
 ## Brand, System Theme, and Density Refinement
 
@@ -53,15 +53,15 @@
 - [x] Add explicit light, dark, and system theme preferences with OS synchronization.
 - [x] Use the correct pre-composed logo asset in each header/footer theme context.
 - [x] Add persistent comfortable and compact density controls for workbench card layouts.
-- [ ] Validate logo contrast, system-theme switching, density responsiveness, typecheck, and production build.
-- [ ] Save and report the refinement release.
+- [x] Validate logo contrast, system-theme switching, density responsiveness, typecheck, and production build.
+- [x] Save and report the refinement release.
 
 ## Local-Session Modal Containment Fix
 
 - [x] Inspect the modal’s status rows and offline-message layout for overflow or invalid width behavior.
 - [x] Constrain and restyle the modal content for desktop and mobile containment.
 - [x] Validate the trust modal’s local, account, original, and offline-state content on desktop and mobile.
-- [ ] Save and report the modal correction.
+- [x] Save and report the modal correction.
 
 ## Current Implementation Report
 
@@ -78,7 +78,7 @@
 - [x] Harden heavy-document, file-validation, worker-failure, cancellation, and output-download recovery paths.
 - [x] Validate service-worker lifecycle, app-shell cache restrictions, direct navigation, and cache update behavior.
 - [x] Run comprehensive automated/manual quality checks and prepare a launch-candidate validation report.
-- [ ] Save and report the hardened launch-candidate release.
+- [x] Save and report the hardened launch-candidate release.
 
 ## CachePDF V1 Growth and Monetization
 
@@ -90,9 +90,17 @@
 - [x] Add Nivaronix discovery and editorial-policy surfaces without affiliate marketing or disguised sponsorships.
 - [x] Add a quiet post-export support acknowledgement outside active document processing and download actions.
 - [x] Validate public pages, metadata, sitemap, privacy boundaries, mobile layouts, and build quality.
-- [ ] Save and report the V1 growth and monetization release.
+- [x] Save and report the V1 growth and monetization release.
 - [x] Add the understated “Keep CachePDF independent” support section to the homepage with support and advertiser inquiry links.
 - [x] Correct light-mode card hover backgrounds and hover-state text contrast.
 - [x] Increase navigation text size and contrast for reliable desktop readability.
 - [x] Add page-specific metadata and a canonical path to the How CachePDF Works page.
 - [x] Convert sitemap locations to absolute canonical URLs and revalidate the XML surface.
+- [x] Create an auditable CachePDF release-history report covering earlier checkpoints, product identity, feature scope, technology, and validation evidence.
+- [x] Create the final CachePDF V1 SEO and Monetization report linked to the V1 checkpoint.
+- [x] Record targeted visual evidence for logo contrast, theme switching, and density responsiveness.
+- [x] Capture and retain a system-theme screenshot in an isolated browser profile.
+- [x] Capture and retain workbench screenshots for both Comfortable and Compact density modes.
+- [x] Identify and correct the remaining light-mode card hover selector that produces a dark background with low-contrast text.
+- [x] Correct light-mode hover styling for the workbench-directory action-card grid and the homepage five-mode card grid, including nested labels and action text.
+- [x] Preserve the selected source filename by default for every export and provide an explicit rename option before download.

@@ -132,8 +132,8 @@ button:active, .button-primary:active, .button-secondary:active { transform: sca
   .metric-chip { min-width: 0; border: 1px solid rgba(255,255,255,.08); border-radius: .55rem; background: rgba(1,3,6,.32); padding: .55rem .6rem; }
   .metric-chip span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: "IBM Plex Mono", monospace; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: #718095; }
   .metric-chip strong { display: block; margin-top: .18rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .75rem; font-weight: 600; color: #dce7ef; }
-  .tool-card { position: relative; transition: background-color 190ms cubic-bezier(.23,1,.32,1), transform 190ms cubic-bezier(.23,1,.32,1); }
-  .tool-card:hover { z-index: 1; background: #0e141d !important; transform: translateY(-2px); }
+  .tool-card { position: relative; background: #090d13; transition: background-color 190ms cubic-bezier(.23,1,.32,1), transform 190ms cubic-bezier(.23,1,.32,1); }
+  .theme-dark .tool-card:hover { z-index: 1; background: #0e141d !important; transform: translateY(-2px); }
   .tool-card::after { content: ""; position: absolute; top: 0; left: 0; height: 2px; width: 0; background: #05c8f6; transition: width 220ms cubic-bezier(.23,1,.32,1); }
   .tool-card:hover::after { width: 100%; }
   .state-pill { display: inline-flex; border-radius: 999px; padding: .28rem .48rem; font-family: "IBM Plex Mono", monospace; font-size: 8px; letter-spacing: .10em; text-transform: uppercase; white-space: nowrap; }
@@ -219,6 +219,7 @@ html.theme-light .site-shell .tool-card:hover {
   border-color: rgba(5, 130, 162, .42) !important;
   background: linear-gradient(145deg, #f8feff, #e6f7fb) !important;
   box-shadow: 0 12px 26px rgba(34, 86, 105, .12), inset 0 1px 0 rgba(255,255,255,.95);
+  transform: translateY(-2px);
 }
 html.theme-light .site-shell .tool-card:hover h2,
 html.theme-light .site-shell .tool-card:hover h3 { color: #102735 !important; }
