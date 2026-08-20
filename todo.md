@@ -130,3 +130,12 @@
 - [x] Add opt-in browser-local saving and reuse controls for drawn and typed PDF signatures.
 - [x] Validate workflow feedback, preview behavior, local signature persistence, accessibility, and release health.
 - [x] Save and report the workflow-feedback enhancement release.
+- [x] Add user-selected acceptable target-size limits to browser-local PDF compression.
+- [x] Detect enlargement and preserve the original PDF as the default result when compression cannot reduce it.
+- [x] Add truthful target-met and target-unreachable compression result states.
+- [x] Validate adaptive target-size compression behavior and release health.
+- [x] Save and report the adaptive compression release.
+- [x] Implement quality-first fallback messaging for already-optimized or text-dense PDFs that cannot be reduced without unacceptable loss.
+- [x] Add Best effort, 10% smaller, 25% smaller, and custom KB/MB maximum-size compression presets.
+- [x] Present original size, result size, and reduction percentage with TARGET REACHED, PARTIAL REDUCTION, ALREADY OPTIMIZED, and QUALITY LOSS REQUIRED statuses.
+- [x] Preserve the unchanged source as the recommended result whenever a requested target cannot be reached losslessly.
