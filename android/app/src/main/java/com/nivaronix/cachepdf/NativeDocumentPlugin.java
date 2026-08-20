@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.util.Base64;
 import androidx.activity.result.ActivityResult;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -50,6 +51,32 @@ public class NativeDocumentPlugin extends Plugin {
   public void consumeIncomingDocument(PluginCall call) {
     if (incomingUri == null) { call.resolve(); return; }
     Uri uri = incomingUri; incomingUri = null; call.resolve(describe(uri));
+  }
+
+  @PluginMethod
+  public void saveExport(PluginCall call) {
+    String filename = call.getString("filename");
+    String mimeType = call.getString("mimeType", "application/octet-stream");
+    String base64 = call.getString("base64");
+    if (filename == null || base64 == null) { call.reject("Export filename or content is missing."); return; }
+    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    intent.setType(mimeType);
+    intent.putExtra(Intent.EXTRA_TITLE, filename);
+    startActivityForResult(call, intent, "writeExport");
+  }
+
+  @ActivityCallback
+  private void writeExport(PluginCall call, ActivityResult result) {
+    if (call == null || result.getData() == null || result.getData().getData() == null) { if (call != null) call.reject("Export location was not selected."); return; }
+    try {
+      byte[] bytes = Base64.decode(call.getString("base64"), Base64.DEFAULT);
+      try (java.io.OutputStream output = getContext().getContentResolver().openOutputStream(result.getData().getData(), "w")) {
+        if (output == null) throw new java.io.IOException("Android could not open the selected destination.");
+        output.write(bytes);
+      }
+      call.resolve();
+    } catch (Exception error) { call.reject("CachePDF could not write the export.", error); }
   }
 
   private JSObject describe(Uri uri) {

@@ -6,6 +6,7 @@ type NativeDocument = { uri: string; name: string; mimeType: string };
 type NativeDocumentPlugin = {
   pickDocument: () => Promise<NativeDocument>;
   consumeIncomingDocument: () => Promise<NativeDocument | null>;
+  saveExport: (options: { filename: string; mimeType: string; base64: string }) => Promise<void>;
 };
 
 const NativeDocument = registerPlugin<NativeDocumentPlugin>("NativeDocument");
@@ -36,8 +37,7 @@ export async function consumeNativeIncomingDocument() {
 export async function shareNativeExport(title: string, filename: string, blob: Blob) {
   if (!isNativeAndroid()) return false;
   const base64 = await blobToBase64(blob);
-  const saved = await Filesystem.writeFile({ path: `exports/${filename}`, data: base64, recursive: true });
-  await Share.share({ title, files: [saved.uri], dialogTitle: title });
+  await NativeDocument.saveExport({ filename, mimeType: blob.type || "application/octet-stream", base64 });
   return true;
 }
 
