@@ -175,3 +175,7 @@
 - [x] Bundle every remaining CachePDF image and visual asset referenced by the offline Android WebView.
 - [x] Record the actual Android device model, Android version, and confirmed pass/fail test matrix for the final release report.
 - [x] Deliver the final CachePDF Android and web readiness report with a factual GO-style verdict.
+- [x] Guide Cloudflare Pages static build setup from the CachePDF GitHub repository.
+- [x] Guide cachepdf.nivaronix.com custom-domain activation and post-deployment verification.
+- [ ] Run rigorous live end-to-end validation of the deployed CachePDF web application, including public routes, core local workflows, responsive behavior, and browser-error checks.
+- [x] Fix sitemap and robots directives so all published URLs are absolute canonical CachePDF URLs accepted by Google Search Console.
