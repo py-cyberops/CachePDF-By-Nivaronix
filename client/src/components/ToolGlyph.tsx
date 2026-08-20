@@ -1,5 +1,5 @@
 /**
- * OnePDF Design Note: Icons remain thin, technical, and high-contrast to reinforce the
+ * CachePDF Design Note: Icons remain thin, technical, and high-contrast to reinforce the
  * Technical Trust Ledger system without introducing generic dashboard ornament.
  */
 import type { LucideIcon } from "lucide-react";

@@ -17,4 +17,14 @@
 - [x] Build selected-thumbnail splitting into separate single-page PDF files.
 - [x] Validate export settings, split archive entry states, responsive layout, typecheck, and production build.
 - [ ] Save an enhancement checkpoint and report the release.
-- [x] Summarize the product’s brand identity, implemented feature set, and technology stack for delivery.
+- [ ] Summarize the product’s brand identity, implemented feature set, and technology stack for delivery.
+
+## CachePDF Launch Reconciliation
+
+- [x] Read the complete CachePDF specification and map copy, information-architecture, trust, and visual gaps.
+- [x] Replace all customer-facing OnePDF naming with CachePDF by Nivaronix.
+- [x] Reframe the product as one unified private PDF workbench using the five operating modes.
+- [x] Add the discoverable local-session trust state and factual trust panel.
+- [x] Reconcile hero, navigation, CTAs, tool language, and completion states with the CachePDF voice system.
+- [x] Validate the preserved workflows, responsive design, factual trust claims, typecheck, and production build.
+- [ ] Save and report the reconciled CachePDF release.

@@ -1,5 +1,5 @@
 /**
- * OnePDF Design Note: Browser PDF utilities keep document rendering and page export entirely
+ * CachePDF Design Note: Browser PDF utilities keep document rendering and page export entirely
  * client-side, supporting the Technical Trust Ledger promise of visible local processing.
  */
 import * as pdfjs from "pdfjs-dist/build/pdf.mjs";

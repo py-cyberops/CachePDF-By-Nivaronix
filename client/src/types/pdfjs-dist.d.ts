@@ -1,5 +1,5 @@
 /**
- * OnePDF Design Note: PDF.js ships its browser build as ESM without an exposed declaration path
+ * CachePDF Design Note: PDF.js ships its browser build as ESM without an exposed declaration path
  * in this package version. This declaration preserves strict project compilation while the
  * runtime module is configured with the bundled Vite worker in pdfBrowser.ts.
  */

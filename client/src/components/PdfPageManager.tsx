@@ -1,5 +1,5 @@
 /**
- * OnePDF Design Note: The page manager treats each PDF page as a tactile work surface. It uses
+ * CachePDF Design Note: The page manager treats each PDF page as a tactile work surface. It uses
  * rendered thumbnails, deliberate cyan selection states, and accessible drag ordering—not a
  * generic table—so high-stakes document changes remain easy to inspect.
  */
