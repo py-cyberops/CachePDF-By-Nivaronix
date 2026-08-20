@@ -79,3 +79,20 @@
 - [x] Validate service-worker lifecycle, app-shell cache restrictions, direct navigation, and cache update behavior.
 - [x] Run comprehensive automated/manual quality checks and prepare a launch-candidate validation report.
 - [ ] Save and report the hardened launch-candidate release.
+
+## CachePDF V1 Growth and Monetization
+
+- [x] Complete the V1 specification review and map support, advertising, growth, SEO, and policy requirements.
+- [x] Preserve the free, accountless, local-processing model and no-advertising processing-workbench invariant.
+- [x] Add the optional support route and explicit donation privacy boundary; payment checkout remains gated on missing Stripe credentials.
+- [x] Add the advertiser inquiry route and advertiser privacy policy without marketplace, tracking, or in-workbench advertising.
+- [x] Build the approved public SEO architecture, guides, structured data, and technical SEO assets.
+- [x] Add Nivaronix discovery and editorial-policy surfaces without affiliate marketing or disguised sponsorships.
+- [x] Add a quiet post-export support acknowledgement outside active document processing and download actions.
+- [x] Validate public pages, metadata, sitemap, privacy boundaries, mobile layouts, and build quality.
+- [ ] Save and report the V1 growth and monetization release.
+- [x] Add the understated “Keep CachePDF independent” support section to the homepage with support and advertiser inquiry links.
+- [x] Correct light-mode card hover backgrounds and hover-state text contrast.
+- [x] Increase navigation text size and contrast for reliable desktop readability.
+- [x] Add page-specific metadata and a canonical path to the How CachePDF Works page.
+- [x] Convert sitemap locations to absolute canonical URLs and revalidate the XML surface.

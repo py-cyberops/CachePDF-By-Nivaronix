@@ -18,19 +18,33 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const About = lazy(() => import("./pages/About"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Guides = lazy(() => import("./pages/Guides"));
+const GuidePage = lazy(() => import("./pages/GuidePage"));
+const ToolLanding = lazy(() => import("./pages/ToolLanding"));
+const Support = lazy(() => import("./pages/Support"));
+const Advertise = lazy(() => import("./pages/Advertise"));
+const PrivateTools = lazy(() => import("./pages/PrivateTools"));
+const EditorialPolicy = lazy(() => import("./pages/EditorialPolicy"));
 
 function LazyRoute({ component: Component }: { component: ComponentType }) {
   return <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#07090d] text-[#a9b6c6]"><div className="font-mono text-[10px] uppercase tracking-[0.16em]">Opening CachePDF…</div></main>}><Component /></Suspense>;
 }
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   const toolRoute = () => <LazyRoute component={Tools} />;
   const workbenchRoute = () => <LazyRoute component={ToolWorkbench} />;
   const privacyRoute = () => <LazyRoute component={Privacy} />;
   const pricingRoute = () => <LazyRoute component={Pricing} />;
   const aboutRoute = () => <LazyRoute component={About} />;
+  const guidesRoute = () => <LazyRoute component={Guides} />;
+  const guidePageRoute = () => <LazyRoute component={GuidePage} />;
+  const landingRoute = () => <LazyRoute component={ToolLanding} />;
+  const supportRoute = () => <LazyRoute component={Support} />;
+  const advertiseRoute = () => <LazyRoute component={Advertise} />;
+  const privateToolsRoute = () => <LazyRoute component={PrivateTools} />;
+  const editorialRoute = () => <LazyRoute component={EditorialPolicy} />;
   const notFoundRoute = () => <LazyRoute component={NotFound} />;
-  return <Switch><Route path="/" component={Home} /><Route path="/tools" component={toolRoute} /><Route path="/tools/:slug" component={workbenchRoute} /><Route path="/privacy" component={privacyRoute} /><Route path="/pricing" component={pricingRoute} /><Route path="/about" component={aboutRoute} /><Route path="/404" component={notFoundRoute} /><Route component={notFoundRoute} /></Switch>;
+  return <Switch><Route path="/" component={Home} /><Route path="/tools" component={toolRoute} /><Route path="/tools/:slug" component={workbenchRoute} /><Route path="/how-it-works" component={privacyRoute} /><Route path="/privacy" component={privacyRoute} /><Route path="/pricing" component={pricingRoute} /><Route path="/about" component={aboutRoute} /><Route path="/guides" component={guidesRoute} /><Route path="/guides/:slug" component={guidePageRoute} /><Route path="/support" component={supportRoute} /><Route path="/advertise" component={advertiseRoute} /><Route path="/private-pdf-tools" component={privateToolsRoute} /><Route path="/editorial-policy" component={editorialRoute} /><Route path="/merge-pdf" component={landingRoute} /><Route path="/split-pdf" component={landingRoute} /><Route path="/reorder-pdf-pages" component={landingRoute} /><Route path="/rotate-pdf" component={landingRoute} /><Route path="/extract-pdf-pages" component={landingRoute} /><Route path="/delete-pdf-pages" component={landingRoute} /><Route path="/jpg-to-pdf" component={landingRoute} /><Route path="/png-to-pdf" component={landingRoute} /><Route path="/images-to-pdf" component={landingRoute} /><Route path="/pdf-to-jpg" component={landingRoute} /><Route path="/pdf-to-png" component={landingRoute} /><Route path="/pdf-to-webp" component={landingRoute} /><Route path="/watermark-pdf" component={landingRoute} /><Route path="/add-page-numbers-pdf" component={landingRoute} /><Route path="/ocr-pdf" component={landingRoute} /><Route path="/view-pdf-metadata" component={landingRoute} /><Route path="/remove-pdf-metadata" component={landingRoute} /><Route path="/404" component={notFoundRoute} /><Route component={notFoundRoute} /></Switch>;
 }
 
 function ThemedApp() {

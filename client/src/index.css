@@ -116,9 +116,9 @@ button:active, .button-primary:active, .button-secondary:active { transform: sca
   .grid-fade { background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px), radial-gradient(circle at 73% 38%, rgba(5,200,246,.10), transparent 24%); background-size: 44px 44px, 44px 44px, auto; mask-image: linear-gradient(to bottom, black 0%, rgba(0,0,0,.55) 62%, transparent 100%); opacity: .72; }
   .section-kicker { display: flex; align-items: center; gap: .55rem; font-family: "IBM Plex Mono", monospace; font-size: 10px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: #65dcf7; }
   .status-dot { width: 6px; height: 6px; border-radius: 999px; background: #05c8f6; box-shadow: 0 0 0 4px rgba(5,200,246,.10); }
-  .nav-link { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: #a3adbb; transition: color 180ms cubic-bezier(.23,1,.32,1); }
-  .nav-link:hover { color: #f5f7fa; }
-  .mobile-nav-link { padding: .8rem .25rem; border-bottom: 1px solid rgba(255,255,255,.07); font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: #cbd3dd; }
+  .nav-link { font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 500; letter-spacing: .105em; text-transform: uppercase; color: #d7e0e9; transition: color 180ms cubic-bezier(.23,1,.32,1), text-decoration-color 180ms cubic-bezier(.23,1,.32,1); }
+  .nav-link:hover { color: #76e2f9; }
+  .mobile-nav-link { padding: .85rem .25rem; border-bottom: 1px solid rgba(255,255,255,.07); font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 500; letter-spacing: .105em; text-transform: uppercase; color: #d8e2eb; }
   .button-primary, .button-secondary, .button-ghost { display: inline-flex; align-items: center; gap: .55rem; min-height: 2.65rem; border-radius: .58rem; padding: .65rem .95rem; font-weight: 600; line-height: 1; transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 180ms cubic-bezier(.23,1,.32,1), border-color 180ms cubic-bezier(.23,1,.32,1), color 180ms cubic-bezier(.23,1,.32,1); }
   .button-primary { border: 1px solid #05c8f6; background: #05c8f6; color: #071118; box-shadow: 0 8px 22px rgba(5,200,246,.14); }
   .button-primary:hover { background: #5ee1fb; border-color: #5ee1fb; }
@@ -211,6 +211,22 @@ button:active, .button-primary:active, .button-secondary:active { transform: sca
   .theme-light .thumbnail-select, .theme-light .thumbnail-drag, .theme-light .thumbnail-rotate { border-color: rgba(24,46,63,.18); background: rgba(255,255,255,.90); color: #25677a; }
   .theme-light .thumbnail-select-active { border-color: #0585a6; background: #0585a6; color: #fff; }
 }
+
+/* Keep light-mode interaction states paper-bright even though the dark workbench hover rule
+   deliberately uses a near-black surface. These rules sit after the shared hover rule so the
+   light semantic state remains deterministic across system-theme and explicit-light modes. */
+html.theme-light .site-shell .tool-card:hover {
+  border-color: rgba(5, 130, 162, .42) !important;
+  background: linear-gradient(145deg, #f8feff, #e6f7fb) !important;
+  box-shadow: 0 12px 26px rgba(34, 86, 105, .12), inset 0 1px 0 rgba(255,255,255,.95);
+}
+html.theme-light .site-shell .tool-card:hover h2,
+html.theme-light .site-shell .tool-card:hover h3 { color: #102735 !important; }
+html.theme-light .site-shell .tool-card:hover p { color: #42596a !important; }
+html.theme-light .site-shell .tool-card:hover > span:last-child { color: #006f8c !important; }
+html.theme-light .site-shell .nav-link { color: #243d4e; }
+html.theme-light .site-shell .nav-link:hover { color: #006d89; }
+html.theme-light .site-shell .mobile-nav-link { color: #243d4e; }
 
 @media (min-width: 640px) { .container { padding-left: 1.75rem; padding-right: 1.75rem; } }
 @media (min-width: 1024px) { .container { max-width: 1240px; padding-left: 2rem; padding-right: 2rem; } }
