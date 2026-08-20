@@ -1,12 +1,13 @@
 import { buildSitemap, getCanonicalOrigin } from "./seo";
 import { describe, expect, it } from "vitest";
+import { buildSitemap, CACHEPDF_CANONICAL_ORIGIN, getCanonicalOrigin } from "./seo";
 
 describe("CachePDF technical SEO", () => {
   it("builds absolute canonical sitemap URLs for every public surface", () => {
-    const sitemap = buildSitemap("https://cachepdf.example.com/");
-    expect(sitemap).toContain("<loc>https://cachepdf.example.com/</loc>");
-    expect(sitemap).toContain("<loc>https://cachepdf.example.com/how-it-works</loc>");
-    expect(sitemap).toContain("<loc>https://cachepdf.example.com/guides/ocr-scanned-pdf-locally</loc>");
+    const sitemap = buildSitemap(CACHEPDF_CANONICAL_ORIGIN);
+    expect(sitemap).toContain("<loc>https://cachepdf.nivaronix.com/</loc>");
+    expect(sitemap).toContain("<loc>https://cachepdf.nivaronix.com/how-cachepdf-works</loc>");
+    expect(sitemap).toContain("<loc>https://cachepdf.nivaronix.com/guides/ocr-scanned-pdf-locally</loc>");
     expect(sitemap).not.toContain("<loc>/");
   });
 

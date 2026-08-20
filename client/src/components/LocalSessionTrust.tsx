@@ -69,7 +69,7 @@ export default function LocalSessionTrust({ compact = false }: { compact?: boole
         <p id="local-session-description" className="mt-4 text-sm leading-6 text-[#9eabbc]">Your selected document contents are not sent to CachePDF for supported browser-local processing.</p>
         <dl className="mt-6 divide-y divide-white/[0.08] border-y border-white/[0.08]">{trustRows.map(([term, detail]) => <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3" key={term}><dt className="min-w-0 text-sm text-[#8491a3]">{term}</dt><dd className="flex min-w-0 items-center justify-end gap-1.5 break-words text-right font-mono text-[10px] uppercase tracking-[0.12em] text-[#70dff8]">{term === "App shell" && (online ? <Radio className="h-3 w-3 shrink-0" /> : <WifiOff className="h-3 w-3 shrink-0" />)}{detail}</dd></div>)}</dl>
         <div className="mt-5 flex min-w-0 gap-3 rounded-[10px] border border-[#05c8f6]/20 bg-[#05c8f6]/[0.05] p-3"><Info className="mt-0.5 h-4 w-4 shrink-0 text-[#05c8f6]" /><p className="min-w-0 text-xs leading-5 text-[#9ed7e6]">{appShellReady ? "The app shell is cached for offline reuse after this visit. " : "The app shell is not yet verified as cached. "}OCR runs in a browser worker, but English language data may require network access before OCR can work offline.</p></div>
-        <Link href="/privacy" onClick={closeDialog} className="button-secondary mt-6">How CachePDF works →</Link>
+        <Link href="/how-cachepdf-works" onClick={closeDialog} className="button-secondary mt-6">How CachePDF works →</Link>
       </section>
     </div>, document.body)}
   </>;

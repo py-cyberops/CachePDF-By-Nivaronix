@@ -40,6 +40,7 @@ import { useDocumentSession } from "@/contexts/DocumentSessionContext";
 import DensityControl from "@/components/DensityControl";
 import { useDensity } from "@/contexts/DensityContext";
 import { defaultOutputName, requestedDownloadName } from "@/lib/outputNames";
+import { trackCachePdfEvent } from "@/lib/telemetry";
 
 type LoadedFile = { file: File; name: string; size: number; pages?: number; kind: "pdf" | "image" };
 type Result = { bytes: Uint8Array; name: string; mime: string; label: string };
@@ -96,6 +97,7 @@ function saveDownload(result: Result, requestedName: string) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
+  trackCachePdfEvent("export_completed", { output: result.mime === "application/zip" ? "zip" : "pdf" });
   window.setTimeout(() => URL.revokeObjectURL(url), 350);
 }
 
@@ -107,6 +109,7 @@ function saveText(text: string, requestedName: string) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
+  trackCachePdfEvent("export_completed", { output: "text" });
   window.setTimeout(() => URL.revokeObjectURL(url), 350);
 }
 
@@ -178,7 +181,7 @@ export default function ToolWorkbench() {
     setPageRule("all");
   }
 
-  const presentResult = (next: Result) => { setResult(next); setDownloadName(next.name); };
+  const presentResult = (next: Result) => { setResult(next); setDownloadName(next.name); trackCachePdfEvent("operation_completed", { tool: tool.slug, output: next.mime === "application/zip" ? "zip" : "pdf" }); };
 
   async function ingest(selectedFiles: FileList | File[]) {
     const candidates = Array.from(selectedFiles);
@@ -291,6 +294,7 @@ export default function ToolWorkbench() {
     if (preflight && !preflightAcknowledged) { toast.message("Review the local memory preflight", { description: "Confirm the preflight notice before starting this action." }); return; }
     cancelRequested.current = false;
     setBusy(true); resetResultState();
+    trackCachePdfEvent("operation_started", { tool: activeTool.slug });
     try {
       if (needsImages) { presentResult(await makeImagePdf()); toast.success("PDF ready to export."); return; }
       if (isMerge) {
@@ -305,7 +309,7 @@ export default function ToolWorkbench() {
       if (!selection.length) throw new Error("Select at least one page before processing.");
       if (activeTool.slug === "pdf-to-images") { presentResult(await exportImages(primaryFile.file, selection)); toast.success("Page images ready to export."); return; }
       if (activeTool.slug === "split-pdf") { presentResult(await splitIntoIndividualPdfs(primaryFile.file, selection)); toast.success("Individual PDFs ready to export."); return; }
-      if (activeTool.slug === "ocr-pdf") { const text = await runOcr(primaryFile.file, selection); setOcrText(text); setDownloadName(defaultOutputName(primaryFile.name, "txt")); setOcrProgress("OCR complete"); toast.success("OCR completed locally."); return; }
+      if (activeTool.slug === "ocr-pdf") { const text = await runOcr(primaryFile.file, selection); setOcrText(text); setDownloadName(defaultOutputName(primaryFile.name, "txt")); setOcrProgress("OCR complete"); trackCachePdfEvent("operation_completed", { tool: activeTool.slug, output: "text" }); toast.success("OCR completed locally."); return; }
       if (activeTool.slug === "pdf-privacy-scanner") {
         const fields = [["Title", source.getTitle()], ["Author", source.getAuthor()], ["Subject", source.getSubject()], ["Keywords", source.getKeywords()], ["Creator", source.getCreator()], ["Producer", source.getProducer()], ["Created", source.getCreationDate()?.toLocaleString()], ["Modified", source.getModificationDate()?.toLocaleString()]];
         const present = fields.filter(([, value]) => Boolean(value)).map(([label, value]) => `${label}: ${value}`);
@@ -328,7 +332,7 @@ export default function ToolWorkbench() {
         source.setTitle(""); source.setAuthor(""); source.setSubject(""); source.setKeywords([]); source.setCreator(""); source.setProducer(""); output = { bytes: await source.save(), name: defaultOutputName(primaryFile.name, "pdf"), mime: "application/pdf", label: "Metadata removed locally" };
       } else { throw new Error("This local operation has not been configured."); }
       presentResult(output); toast.success(output.label);
-    } catch (error) { const message = processingError(error, cancelRequested.current); toast.error(message.title, { description: message.detail }); }
+    } catch (error) { const message = processingError(error, cancelRequested.current); trackCachePdfEvent("operation_failed", { tool: activeTool.slug }); toast.error(message.title, { description: message.detail }); }
     finally { activeOcrWorker.current = null; setBusy(false); }
   }
 

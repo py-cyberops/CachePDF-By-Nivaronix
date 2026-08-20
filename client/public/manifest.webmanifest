@@ -2,6 +2,8 @@
   "name": "CachePDF by Nivaronix",
   "short_name": "CachePDF",
   "description": "The private PDF workbench for browser-local document operations.",
+  "id": "/",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#07090d",

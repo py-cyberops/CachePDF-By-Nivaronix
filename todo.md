@@ -104,3 +104,24 @@
 - [x] Identify and correct the remaining light-mode card hover selector that produces a dark background with low-contrast text.
 - [x] Correct light-mode hover styling for the workbench-directory action-card grid and the homepage five-mode card grid, including nested labels and action text.
 - [x] Preserve the selected source filename by default for every export and provide an explicit rename option before download.
+- [x] Create and deliver a detailed end-to-end CachePDF implementation report from initial build through the final correction release.
+
+## CachePDF Post-V1 Expansion
+
+- [x] Audit the `dcec21fa` baseline, routes, SEO, service worker, dependency loading, analytics behavior, and document-content boundary.
+- [x] Set the canonical production origin to `https://cachepdf.nivaronix.com` and strengthen deployment-safe SEO, security, and privacy-safe analytics foundations.
+- [x] Implement browser-local searchable PDF generation from OCR with a positioned invisible text layer.
+- [x] Implement browser-local electronic signature placement with draw, type, and image methods.
+- [x] Implement genuine browser-local PDF compression with measured size results and truthful no-reduction states.
+- [x] Implement the browser-local Document Privacy Check with factual findings and supported cleanup actions.
+- [x] Add production-ready public tool pages only for completed post-V1 capabilities, update sitemap and navigation, and preserve route-level lazy loading.
+- [x] Restore router coverage for existing sitemap-listed rotate, extract, and delete PDF landing pages.
+- [ ] Validate privacy, source safety, output correctness, accessibility, responsive behavior, and release health across post-V1 functionality.
+- [x] Save and deliver the CachePDF post-V1 expansion release report.
+- [x] Expose the four completed post-V1 public tool pages from shared CachePDF navigation surfaces.
+- [ ] Validate keyboard focus, labels, and activation flow across all new post-V1 landing pages and workspaces.
+- [x] Capture and review mobile layouts for the Searchable PDF and Sign PDF workspaces.
+- [x] Prove keyboard activation and visible focus behavior for primary controls across all post-V1 landing pages and workspaces.
+- [ ] Validate visible focus and keyboard activation for secondary post-V1 workspace controls, including density, signature method, compression profile, and cleanup selection controls.
+- [x] Fix Document Privacy Check so a cleaned PDF no longer reports common metadata or document-date findings when it is rechecked.
+- [x] Fix Document Privacy Check so a cleaned PDF no longer reports common metadata or document-date findings when it is rechecked.

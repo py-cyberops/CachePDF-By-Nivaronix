@@ -1,12 +1,15 @@
 import type { Request, Response } from "express";
 
 export const CACHEPDF_PUBLIC_PATHS = [
-  "/", "/tools", "/how-it-works", "/private-pdf-tools", "/guides", "/support", "/advertise", "/editorial-policy",
+  "/", "/tools", "/how-cachepdf-works", "/private-pdf-tools", "/guides", "/support", "/advertise", "/editorial-policy",
   "/merge-pdf", "/split-pdf", "/reorder-pdf-pages", "/rotate-pdf", "/extract-pdf-pages", "/delete-pdf-pages",
   "/jpg-to-pdf", "/png-to-pdf", "/images-to-pdf", "/pdf-to-jpg", "/pdf-to-png", "/pdf-to-webp", "/watermark-pdf",
   "/add-page-numbers-pdf", "/ocr-pdf", "/view-pdf-metadata", "/remove-pdf-metadata", "/guides/merge-pdfs-without-uploading",
+  "/make-pdf-searchable", "/sign-pdf", "/compress-pdf", "/document-privacy-check",
   "/guides/remove-pdf-metadata", "/guides/ocr-scanned-pdf-locally", "/guides/rearrange-pdf-pages-privately",
 ] as const;
+
+export const CACHEPDF_CANONICAL_ORIGIN = "https://cachepdf.nivaronix.com";
 
 function firstHeaderValue(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value?.split(",")[0]?.trim();
@@ -27,10 +30,9 @@ export function buildSitemap(origin: string) {
 }
 
 export function sendSitemap(request: Request, response: Response) {
-  response.type("application/xml").send(buildSitemap(getCanonicalOrigin(request)));
+  response.type("application/xml").send(buildSitemap(CACHEPDF_CANONICAL_ORIGIN));
 }
 
 export function sendRobots(request: Request, response: Response) {
-  const origin = getCanonicalOrigin(request).replace(/\/$/, "");
-  response.type("text/plain").send(`User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`);
+  response.type("text/plain").send(`User-agent: *\nAllow: /\n\nSitemap: ${CACHEPDF_CANONICAL_ORIGIN}/sitemap.xml\n`);
 }

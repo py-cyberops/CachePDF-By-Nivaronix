@@ -21,12 +21,16 @@ export const toolCategories: Array<{ name: string; detail: string; tools: ToolDe
   { name: "Mark", detail: "Add legible document context to a new output copy.", tools: [
     { slug: "add-watermark", name: "Watermark", description: "Place a local text watermark on a new PDF.", category: "Mark", icon: "watermark", state: "implemented", local: true },
     { slug: "add-page-numbers", name: "Page numbers", description: "Number pages in a newly generated PDF.", category: "Mark", icon: "numbers", state: "implemented", local: true },
+    { slug: "sign-pdf", name: "Sign PDF", description: "Place a typed, drawn, or image signature on a new PDF locally.", category: "Mark", icon: "sign", state: "implemented", local: true },
   ] },
   { name: "Read", detail: "Render or recognize document content locally in the browser.", tools: [
     { slug: "ocr-pdf", name: "OCR", description: "Recognize selected pages in a browser worker and export text.", category: "Read", icon: "ocr", state: "implemented", local: true },
+    { slug: "make-pdf-searchable", name: "Make PDF searchable", description: "Add a positioned invisible OCR text layer to a new PDF locally.", category: "Read", icon: "ocr", state: "implemented", local: true },
     { slug: "pdf-to-text", name: "PDF → Text", description: "Inspect text-layer extraction as an experimental browser workflow.", category: "Read", icon: "text", state: "experimental", local: true },
   ] },
   { name: "Clean", detail: "Inspect the document traces that travel beyond its pages.", tools: [
+    { slug: "compress-pdf", name: "Compress PDF", description: "Rebuild PDF pages as a measured lower-footprint local output.", category: "Clean", icon: "compress", state: "implemented", local: true },
+    { slug: "document-privacy-check", name: "Document Privacy Check", description: "Review selected common document traces and create a cleaned local output.", category: "Clean", icon: "clean", state: "implemented", local: true },
     { slug: "pdf-privacy-scanner", name: "Inspect metadata", description: "Review common document metadata locally.", category: "Clean", icon: "scan", state: "implemented", local: true },
     { slug: "remove-pdf-metadata", name: "Remove metadata", description: "Create a new output without common metadata fields.", category: "Clean", icon: "metadata", state: "implemented", local: true },
   ] },

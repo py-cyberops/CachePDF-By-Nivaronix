@@ -32,6 +32,16 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  app.disable("x-powered-by");
+  if (process.env.NODE_ENV === "production") {
+    app.use((_request, response, next) => {
+      response.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://manus-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://manus-analytics.com https://cdn.jsdelivr.net; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+      response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()");
+      response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+      response.setHeader("X-Content-Type-Options", "nosniff");
+      next();
+    });
+  }
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));

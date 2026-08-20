@@ -66,6 +66,7 @@ body { margin: 0; min-width: 320px; background: #07090d; color: #f5f7fa; font-fa
 ::selection { background: rgba(5, 200, 246, 0.24); color: #f5f7fa; }
 button, a, input, select { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid #05c8f6; outline-offset: 3px; }
+input[type="checkbox"]:focus { outline: 2px solid #05c8f6 !important; outline-offset: 3px !important; }
 button:active, .button-primary:active, .button-secondary:active { transform: scale(0.975); }
 
 /* Light mode stays within the Technical Trust Ledger: paper-white document surfaces, ink text,

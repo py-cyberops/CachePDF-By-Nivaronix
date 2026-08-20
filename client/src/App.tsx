@@ -13,6 +13,10 @@ import { DensityProvider } from "./contexts/DensityContext";
 import Home from "./pages/Home";
 
 const ToolWorkbench = lazy(() => import("./pages/ToolWorkbench"));
+const SearchablePdfWorkbench = lazy(() => import("./pages/SearchablePdfWorkbench"));
+const SignPdfWorkbench = lazy(() => import("./pages/SignPdfWorkbench"));
+const CompressPdfWorkbench = lazy(() => import("./pages/CompressPdfWorkbench"));
+const PrivacyCheckWorkbench = lazy(() => import("./pages/PrivacyCheckWorkbench"));
 const Tools = lazy(() => import("./pages/Tools"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -33,6 +37,10 @@ function Router() {
   // make sure to consider if you need authentication for certain routes
   const toolRoute = () => <LazyRoute component={Tools} />;
   const workbenchRoute = () => <LazyRoute component={ToolWorkbench} />;
+  const searchablePdfRoute = () => <LazyRoute component={SearchablePdfWorkbench} />;
+  const signPdfRoute = () => <LazyRoute component={SignPdfWorkbench} />;
+  const compressPdfRoute = () => <LazyRoute component={CompressPdfWorkbench} />;
+  const privacyCheckRoute = () => <LazyRoute component={PrivacyCheckWorkbench} />;
   const privacyRoute = () => <LazyRoute component={Privacy} />;
   const pricingRoute = () => <LazyRoute component={Pricing} />;
   const aboutRoute = () => <LazyRoute component={About} />;
@@ -44,7 +52,7 @@ function Router() {
   const privateToolsRoute = () => <LazyRoute component={PrivateTools} />;
   const editorialRoute = () => <LazyRoute component={EditorialPolicy} />;
   const notFoundRoute = () => <LazyRoute component={NotFound} />;
-  return <Switch><Route path="/" component={Home} /><Route path="/tools" component={toolRoute} /><Route path="/tools/:slug" component={workbenchRoute} /><Route path="/how-it-works" component={privacyRoute} /><Route path="/privacy" component={privacyRoute} /><Route path="/pricing" component={pricingRoute} /><Route path="/about" component={aboutRoute} /><Route path="/guides" component={guidesRoute} /><Route path="/guides/:slug" component={guidePageRoute} /><Route path="/support" component={supportRoute} /><Route path="/advertise" component={advertiseRoute} /><Route path="/private-pdf-tools" component={privateToolsRoute} /><Route path="/editorial-policy" component={editorialRoute} /><Route path="/merge-pdf" component={landingRoute} /><Route path="/split-pdf" component={landingRoute} /><Route path="/reorder-pdf-pages" component={landingRoute} /><Route path="/rotate-pdf" component={landingRoute} /><Route path="/extract-pdf-pages" component={landingRoute} /><Route path="/delete-pdf-pages" component={landingRoute} /><Route path="/jpg-to-pdf" component={landingRoute} /><Route path="/png-to-pdf" component={landingRoute} /><Route path="/images-to-pdf" component={landingRoute} /><Route path="/pdf-to-jpg" component={landingRoute} /><Route path="/pdf-to-png" component={landingRoute} /><Route path="/pdf-to-webp" component={landingRoute} /><Route path="/watermark-pdf" component={landingRoute} /><Route path="/add-page-numbers-pdf" component={landingRoute} /><Route path="/ocr-pdf" component={landingRoute} /><Route path="/view-pdf-metadata" component={landingRoute} /><Route path="/remove-pdf-metadata" component={landingRoute} /><Route path="/404" component={notFoundRoute} /><Route component={notFoundRoute} /></Switch>;
+  return <Switch><Route path="/" component={Home} /><Route path="/tools" component={toolRoute} /><Route path="/tools/make-pdf-searchable" component={searchablePdfRoute} /><Route path="/tools/sign-pdf" component={signPdfRoute} /><Route path="/tools/compress-pdf" component={compressPdfRoute} /><Route path="/tools/document-privacy-check" component={privacyCheckRoute} /><Route path="/tools/:slug" component={workbenchRoute} /><Route path="/how-cachepdf-works" component={privacyRoute} /><Route path="/how-it-works" component={privacyRoute} /><Route path="/privacy" component={privacyRoute} /><Route path="/pricing" component={pricingRoute} /><Route path="/about" component={aboutRoute} /><Route path="/guides" component={guidesRoute} /><Route path="/guides/:slug" component={guidePageRoute} /><Route path="/support" component={supportRoute} /><Route path="/advertise" component={advertiseRoute} /><Route path="/private-pdf-tools" component={privateToolsRoute} /><Route path="/editorial-policy" component={editorialRoute} /><Route path="/merge-pdf" component={landingRoute} /><Route path="/split-pdf" component={landingRoute} /><Route path="/reorder-pdf-pages" component={landingRoute} /><Route path="/rotate-pdf" component={landingRoute} /><Route path="/extract-pdf-pages" component={landingRoute} /><Route path="/delete-pdf-pages" component={landingRoute} /><Route path="/jpg-to-pdf" component={landingRoute} /><Route path="/png-to-pdf" component={landingRoute} /><Route path="/images-to-pdf" component={landingRoute} /><Route path="/pdf-to-jpg" component={landingRoute} /><Route path="/pdf-to-png" component={landingRoute} /><Route path="/pdf-to-webp" component={landingRoute} /><Route path="/watermark-pdf" component={landingRoute} /><Route path="/add-page-numbers-pdf" component={landingRoute} /><Route path="/ocr-pdf" component={landingRoute} /><Route path="/make-pdf-searchable" component={landingRoute} /><Route path="/sign-pdf" component={landingRoute} /><Route path="/compress-pdf" component={landingRoute} /><Route path="/document-privacy-check" component={landingRoute} /><Route path="/view-pdf-metadata" component={landingRoute} /><Route path="/remove-pdf-metadata" component={landingRoute} /><Route path="/404" component={notFoundRoute} /><Route component={notFoundRoute} /></Switch>;
 }
 
 function ThemedApp() {
