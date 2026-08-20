@@ -116,13 +116,13 @@
 - [x] Implement the browser-local Document Privacy Check with factual findings and supported cleanup actions.
 - [x] Add production-ready public tool pages only for completed post-V1 capabilities, update sitemap and navigation, and preserve route-level lazy loading.
 - [x] Restore router coverage for existing sitemap-listed rotate, extract, and delete PDF landing pages.
-- [ ] Validate privacy, source safety, output correctness, accessibility, responsive behavior, and release health across post-V1 functionality.
+- [x] Validate privacy, source safety, output correctness, accessibility, responsive behavior, and release health across post-V1 functionality (including final user-confirmed Sign PDF visual and keyboard verification).
 - [x] Save and deliver the CachePDF post-V1 expansion release report.
 - [x] Expose the four completed post-V1 public tool pages from shared CachePDF navigation surfaces.
-- [ ] Validate keyboard focus, labels, and activation flow across all new post-V1 landing pages and workspaces.
+- [x] Validate keyboard focus, labels, and activation flow across all new post-V1 landing pages and workspaces (including final user-confirmed Sign PDF save/reuse controls).
 - [x] Capture and review mobile layouts for the Searchable PDF and Sign PDF workspaces.
 - [x] Prove keyboard activation and visible focus behavior for primary controls across all post-V1 landing pages and workspaces.
-- [ ] Validate visible focus and keyboard activation for secondary post-V1 workspace controls, including density, signature method, compression profile, and cleanup selection controls.
+- [x] Validate visible focus and keyboard activation for secondary post-V1 workspace controls, including density, signature method, compression profile, cleanup selection, and signature save/reuse controls.
 - [x] Fix Document Privacy Check so a cleaned PDF no longer reports common metadata or document-date findings when it is rechecked.
 - [x] Fix Document Privacy Check so a cleaned PDF no longer reports common metadata or document-date findings when it is rechecked.
 - [x] Add visible OCR progress feedback for long local recognition operations.
