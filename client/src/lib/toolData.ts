@@ -20,7 +20,7 @@ export const toolCategories: Array<{ name: string; detail: string; tools: ToolDe
     detail: "Shape document order without changing the original file.",
     tools: [
       { slug: "merge-pdf", name: "Merge PDF", description: "Combine multiple PDFs into one ordered document.", category: "Organize PDFs", icon: "merge", state: "implemented", local: true },
-      { slug: "split-pdf", name: "Split PDF", description: "Create a new document from the page range you choose.", category: "Organize PDFs", icon: "split", state: "implemented", local: true },
+      { slug: "split-pdf", name: "Split PDF", description: "Turn selected page thumbnails into individual PDFs in one local ZIP archive.", category: "Organize PDFs", icon: "split", state: "implemented", local: true },
       { slug: "extract-pages", name: "Extract Pages", description: "Keep only the pages you need in a new PDF.", category: "Organize PDFs", icon: "extract", state: "implemented", local: true },
       { slug: "reorder-pages", name: "Reorder Pages", description: "Build a new PDF in an exact page sequence.", category: "Organize PDFs", icon: "reorder", state: "implemented", local: true },
       { slug: "delete-pages", name: "Delete Pages", description: "Remove selected pages from a copy of your PDF.", category: "Organize PDFs", icon: "delete", state: "implemented", local: true },
@@ -41,7 +41,7 @@ export const toolCategories: Array<{ name: string; detail: string; tools: ToolDe
     detail: "Move from image files to a sharable PDF locally.",
     tools: [
       { slug: "images-to-pdf", name: "Images → PDF", description: "Turn PNG and JPG images into one PDF document.", category: "Convert", icon: "images", state: "implemented", local: true },
-      { slug: "pdf-to-images", name: "PDF → Images", description: "Render selected pages as PNG files in a local ZIP archive.", category: "Convert", icon: "pdfimages", state: "implemented", local: true },
+      { slug: "pdf-to-images", name: "PDF → Images", description: "Render selected pages as PNG, JPEG, or WebP in a local ZIP archive.", category: "Convert", icon: "pdfimages", state: "implemented", local: true },
       { slug: "pdf-to-text", name: "PDF → Text", description: "Extract readable text when the PDF contains a text layer.", category: "Convert", icon: "text", state: "experimental", local: true },
     ],
   },

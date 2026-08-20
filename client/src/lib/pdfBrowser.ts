@@ -15,6 +15,14 @@ export type BrowserPdfDocument = {
   }>;
 };
 
+export type RasterImageFormat = "png" | "jpeg" | "webp";
+
+const rasterMimeTypes: Record<RasterImageFormat, string> = {
+  png: "image/png",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+};
+
 export async function loadBrowserPdf(file: File): Promise<BrowserPdfDocument> {
   const bytes = new Uint8Array(await file.arrayBuffer());
   return pdfjs.getDocument({ data: bytes }).promise as Promise<BrowserPdfDocument>;
@@ -41,10 +49,12 @@ export async function renderPdfPageToCanvas(
   page.cleanup();
 }
 
-export async function renderPdfPageToPng(
+export async function renderPdfPageToImage(
   pdfDocument: BrowserPdfDocument,
   pageNumber: number,
   scale = 1.6,
+  format: RasterImageFormat = "png",
+  quality = 0.86,
 ) {
   const page = await pdfDocument.getPage(pageNumber);
   const viewport = page.getViewport({ scale });
@@ -62,7 +72,7 @@ export async function renderPdfPageToPng(
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob: Blob | null) => {
       if (blob) resolve(blob);
-      else reject(new Error("The page image could not be encoded as PNG."));
-    }, "image/png");
+      else reject(new Error(`The page image could not be encoded as ${format.toUpperCase()}.`));
+    }, rasterMimeTypes[format], format === "png" ? undefined : quality);
   });
 }
