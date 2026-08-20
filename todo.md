@@ -139,3 +139,8 @@
 - [x] Add Best effort, 10% smaller, 25% smaller, and custom KB/MB maximum-size compression presets.
 - [x] Present original size, result size, and reduction percentage with TARGET REACHED, PARTIAL REDUCTION, ALREADY OPTIMIZED, and QUALITY LOSS REQUIRED statuses.
 - [x] Preserve the unchanged source as the recommended result whenever a requested target cannot be reached losslessly.
+- [x] Detect text- and table-dense PDF content locally and show an evidence-based preflight advisory.
+- [x] Add a raster-image compression option that is disabled by default and requires explicit loss-of-quality confirmation.
+- [x] Add a side-by-side local preview of original and generated PDF output before export.
+- [x] Validate consent, advisory, preview, result states, and source preservation across lossless and lossy flows.
+- [x] Save and report the compression quality-assurance release.
