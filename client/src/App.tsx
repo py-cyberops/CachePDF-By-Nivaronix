@@ -1,12 +1,13 @@
 /**
- * OnePDF Design Note: Route composition is intentionally simple so every public and tool page
- * stays inside the same dark, privacy-conscious OnePDF navigation and disclosure system.
+ * CachePDF Design Note: Route composition keeps local document handoff in memory while every
+ * public and tool page stays inside the same privacy-conscious disclosure system.
  */
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
+import { DocumentSessionProvider } from "./contexts/DocumentSessionContext";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
@@ -25,5 +26,5 @@ function ThemedApp() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><ThemedApp /></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><DocumentSessionProvider><ThemedApp /></DocumentSessionProvider></ThemeProvider></ErrorBoundary>;
 }

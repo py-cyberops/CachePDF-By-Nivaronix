@@ -28,3 +28,14 @@
 - [x] Reconcile hero, navigation, CTAs, tool language, and completion states with the CachePDF voice system.
 - [x] Validate the preserved workflows, responsive design, factual trust claims, typecheck, and production build.
 - [ ] Save and report the reconciled CachePDF release.
+
+## Local-Readiness Follow-up
+
+- [x] Review existing file selection, Vite static assets, PWA/service-worker configuration, and supplied CachePDF asset variants.
+- [x] Upload supplied CachePDF asset variants and map each to an appropriate UI touchpoint.
+- [x] Integrate horizontal marks, light/dark marks, app icons, monograms, and favicon without duplicating assets unnecessarily.
+- [x] Add a memory-aware preflight with clear heavy-document warnings and recovery guidance.
+- [x] Add direct hero file opening and route the selected local document into a workbench action.
+- [x] Add service-worker caching, manifest metadata, and offline-ready status language.
+- [x] Validate memory warning entry states, direct hero opening handoff, app-shell cache bundle, responsive behavior, typecheck, and production build.
+- [ ] Save and report the local-readiness enhancement.

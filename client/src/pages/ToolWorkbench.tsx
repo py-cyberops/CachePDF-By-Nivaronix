@@ -32,15 +32,26 @@ import {
   Trash2,
   UploadCloud,
 } from "lucide-react";
-import { useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { toast } from "sonner";
 import { Link, useRoute } from "wouter";
+import { useDocumentSession } from "@/contexts/DocumentSessionContext";
 
 type LoadedFile = { file: File; name: string; size: number; pages?: number; kind: "pdf" | "image" };
 type Result = { bytes: Uint8Array; name: string; mime: string; label: string };
+type MemoryPreflight = { level: "notice" | "caution"; title: string; detail: string };
 
 const pageManagerTools = new Set(["reorder-pages", "delete-pages", "rotate-pages", "split-pdf", "extract-pages", "pdf-to-images", "ocr-pdf"]);
 const formatBytes = (bytes: number) => bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+function getMemoryPreflight(files: LoadedFile[], slug: string): MemoryPreflight | null {
+  const bytes = files.reduce((total, file) => total + file.size, 0);
+  const pages = files.reduce((total, file) => total + (file.pages ?? 0), 0);
+  const renderingHeavy = ["pdf-to-images", "ocr-pdf"].includes(slug);
+  if (bytes >= 75 * 1024 * 1024 || pages >= 180) return { level: "caution", title: "Large document preflight", detail: `This local action will work with ${formatBytes(bytes)} across ${pages || "multiple"} pages. It may use significant browser memory. Process fewer pages or choose a compact render scale if your device slows down.` };
+  if (renderingHeavy && (bytes >= 25 * 1024 * 1024 || pages >= 60)) return { level: "notice", title: "Rendering preflight", detail: `This ${pages || "multi-page"} document will be rendered locally. OCR and image export performance depends on page count and device capability.` };
+  return null;
+}
 
 function parsePages(raw: string, total: number) {
   if (!raw.trim() || raw.trim().toLowerCase() === "all") return Array.from({ length: total }, (_, index) => index + 1);
@@ -103,7 +114,9 @@ export default function ToolWorkbench() {
   const [exportScale, setExportScale] = useState("1.8");
   const [imageFormat, setImageFormat] = useState<RasterImageFormat>("png");
   const [imageQuality, setImageQuality] = useState(86);
+  const [preflightAcknowledged, setPreflightAcknowledged] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { consumeFiles } = useDocumentSession();
 
   if (!tool) return <UnknownTool />;
   const mode = stateCopy(tool);
@@ -115,6 +128,7 @@ export default function ToolWorkbench() {
   const enoughFiles = isMerge ? files.length >= 2 : files.length >= 1;
   const hasPageManager = Boolean(primaryFile && pageCount && pageManagerTools.has(tool.slug));
   const hasPageRule = ["split-pdf", "extract-pages", "delete-pages", "rotate-pages"].includes(tool.slug);
+  const preflight = getMemoryPreflight(files, tool.slug);
 
   function resetResultState() {
     setResult(null);
@@ -148,10 +162,16 @@ export default function ToolWorkbench() {
       accepted.push(record);
     }
     if (!accepted.length) return;
+    setPreflightAcknowledged(false);
     if (isMerge || needsImages) setFiles((current) => [...current, ...accepted]);
     else { setFiles([accepted[0]]); resetPageState(accepted[0].pages ?? 0); }
     resetResultState();
   }
+
+  useEffect(() => {
+    const pending = consumeFiles();
+    if (pending.length) void ingest(pending);
+  }, [consumeFiles]);
 
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => { if (event.target.files) void ingest(event.target.files); event.target.value = ""; };
   const onDrop = (event: DragEvent<HTMLDivElement>) => { event.preventDefault(); setDragging(false); if (event.dataTransfer.files) void ingest(event.dataTransfer.files); };
@@ -223,6 +243,7 @@ export default function ToolWorkbench() {
     const activeTool = tool;
     if (!isImplemented || !activeTool) { toast.message("This action is not enabled yet", { description: "CachePDF keeps the route visible but does not claim local processing support before it is ready." }); return; }
     if (!enoughFiles) { toast.error(isMerge ? "Open at least two PDF files to merge." : "Open a file to continue."); return; }
+    if (preflight && !preflightAcknowledged) { toast.message("Review the local memory preflight", { description: "Confirm the preflight notice before starting this action." }); return; }
     setBusy(true); resetResultState();
     try {
       if (needsImages) { setResult(await makeImagePdf()); toast.success("PDF ready to export."); return; }
@@ -282,6 +303,7 @@ export default function ToolWorkbench() {
         <section className="container grid gap-7 py-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:py-14">
           <div className="surface overflow-hidden"><div className="border-b border-white/[0.09] px-5 py-4 sm:px-7"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a7b2c1]">01 // Select document</p></div><div className="p-5 sm:p-7"><input ref={inputRef} type="file" className="hidden" accept={needsImages ? "image/png,image/jpeg,.png,.jpg,.jpeg" : "application/pdf,.pdf"} multiple={isMerge || needsImages} onChange={onFileChange} />
             {!files.length ? <div onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop} className={`drop-zone ${dragging ? "drop-zone-active" : ""}`}><span className="flex h-12 w-12 items-center justify-center rounded-[12px] border border-[#05c8f6]/25 bg-[#05c8f6]/10 text-[#05c8f6]"><UploadCloud className="h-6 w-6" /></span><h2 className="mt-5 font-display text-xl font-medium tracking-[-0.04em] text-white">{needsImages ? "Open PNG or JPG images locally" : isMerge ? "Open PDF files locally" : "Open a PDF locally"}</h2><p className="mt-2 text-sm leading-6 text-[#8794a6]">{needsImages ? "Create a new PDF from images on this device." : "Choose a file from this device. The original stays untouched."}</p><button type="button" onClick={() => inputRef.current?.click()} className="button-secondary mt-6">Choose file <FolderOpen className="h-4 w-4" /></button><p className="mt-4 font-mono text-[9px] uppercase tracking-[0.15em] text-[#697588]">Up to 100 MB per file · {needsImages ? "PNG / JPG" : "PDF"}</p></div> : <><div className="flex items-center justify-between gap-4"><div><p className="font-display text-lg font-medium tracking-[-0.04em] text-white">{files.length} {files.length === 1 ? "file open" : "files open"}</p><p className="mt-1 text-sm text-[#8794a6]">{isMerge ? "Use the arrows to set document order." : needsImages ? "Images are included in the displayed order." : "Review the controls before running the action."}</p></div><button type="button" onClick={() => inputRef.current?.click()} className="button-ghost text-sm text-[#7adff7]"><FilePlus2 className="h-4 w-4" /> Open {isMerge || needsImages ? "more files" : "another file"}</button></div><div className="mt-6 space-y-2">{files.map((file, index) => <div className="file-row" key={`${file.name}-${index}`}><span className="text-[#697689]"><GripVertical className="h-4 w-4" /></span><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] border border-white/[0.1] bg-[#0a0e14] text-[#8ee7fb]">{file.kind === "image" ? <ImageIcon className="h-4 w-4" /> : <FileText className="h-4 w-4" />}</span><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-[#e4ebf3]">{file.name}</p><p className="mt-0.5 font-mono text-[10px] text-[#7b8798]">{formatBytes(file.size)}{file.pages ? ` · ${file.pages} ${file.pages === 1 ? "page" : "pages"}` : ""}</p></div>{(isMerge || needsImages) && <div className="hidden items-center gap-1 sm:flex"><button className="icon-button-small" onClick={() => moveFile(index, -1)} disabled={index === 0} aria-label="Move file up"><ArrowUp className="h-3.5 w-3.5" /></button><button className="icon-button-small" onClick={() => moveFile(index, 1)} disabled={index === files.length - 1} aria-label="Move file down"><ArrowDown className="h-3.5 w-3.5" /></button></div>}<button className="icon-button-small text-[#f3a1a1] hover:border-[#ef8585]/50" onClick={() => removeFile(index)} aria-label={`Remove ${file.name}`}><Trash2 className="h-3.5 w-3.5" /></button></div>)}</div></>}
+            {preflight && <div className={`mt-6 rounded-[12px] border p-4 ${preflight.level === "caution" ? "border-[#f7ce88]/30 bg-[#f7ce88]/[0.06]" : "border-[#05c8f6]/20 bg-[#05c8f6]/[0.05]"}`}><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#d6b675]">LOCAL RESOURCE PREFLIGHT</p><h2 className="mt-2 font-display text-lg font-medium tracking-[-0.04em] text-white">{preflight.title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#b6c1cf]">{preflight.detail}</p></div><button type="button" onClick={() => setPreflightAcknowledged(true)} className="button-secondary shrink-0 text-xs">{preflightAcknowledged ? "Preflight reviewed" : "Continue locally"}</button></div></div>}
             {hasPageManager && <PdfPageManager file={primaryFile.file} pageOrder={pageOrder} onPageOrderChange={setPageOrder} selectedPages={selectedPages} onSelectedPagesChange={setSelectedPages} pageRotations={pageRotations} onRotatePage={rotateThumb} reorderEnabled={tool.slug === "reorder-pages"} rotationEnabled={tool.slug === "rotate-pages"} selectionLabel={pageSelectionCopy} />}
             {files.length > 0 && <div className="mt-8 border-t border-white/[0.09] pt-7"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a7b2c1]">{hasPageManager ? "03" : "02"} // Configure action</p>{hasPageRule && <label className="mt-5 block"><span className="field-label">{tool.slug === "delete-pages" ? "Pages to delete" : "Pages"}</span><input value={pageRule} onChange={(event) => setPageRule(event.target.value)} className="field-input mt-2" placeholder={pageHint} /><span className="mt-2 block text-xs leading-5 text-[#748194]">{pageHint}. Thumbnail selections take precedence.</span></label>}{tool.slug === "reorder-pages" && <p className="mt-5 rounded-[10px] border border-white/[0.1] bg-[#0a0e14] p-4 text-sm leading-6 text-[#9aa6b7]">The exported PDF uses the thumbnail order shown above. Drag a page card or use its keyboard drag control to change the sequence.</p>}{tool.slug === "split-pdf" && <p className="mt-5 rounded-[10px] border border-[#05c8f6]/20 bg-[#05c8f6]/[0.05] p-4 text-sm leading-6 text-[#9fd8e7]">Selected thumbnails become separate, one-page PDFs. CachePDF packages them into one ZIP archive for export.</p>}{tool.slug === "rotate-pages" && <label className="mt-5 block"><span className="field-label">Batch rotation for selected pages</span><select value={rotation} onChange={(event) => setRotation(event.target.value)} className="field-input mt-2"><option value="90">90° clockwise</option><option value="180">180°</option><option value="270">270° clockwise</option></select></label>}{tool.slug === "add-watermark" && <label className="mt-5 block"><span className="field-label">Watermark text</span><input value={watermark} onChange={(event) => setWatermark(event.target.value)} className="field-input mt-2" maxLength={40} /><span className="mt-2 block text-xs leading-5 text-[#748194]">CachePDF draws a light diagonal text watermark onto a new output file.</span></label>}{tool.slug === "add-page-numbers" && <p className="mt-5 rounded-[10px] border border-white/[0.1] bg-[#0a0e14] p-4 text-sm leading-6 text-[#9aa6b7]">Page numbers are drawn at the lower-right of every page in a new document copy.</p>}{tool.slug === "remove-pdf-metadata" && <p className="mt-5 rounded-[10px] border border-white/[0.1] bg-[#0a0e14] p-4 text-sm leading-6 text-[#9aa6b7]">This removes common document fields such as title, author, subject, keywords, creator, and producer from the new file.</p>}{tool.slug === "pdf-to-images" && <div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="block"><span className="field-label">Image format</span><select value={imageFormat} onChange={(event) => setImageFormat(event.target.value as RasterImageFormat)} className="field-input mt-2"><option value="png">PNG · lossless</option><option value="jpeg">JPEG · compact</option><option value="webp">WebP · efficient</option></select></label><label className="block"><span className="field-label">Render scale</span><select value={exportScale} onChange={(event) => setExportScale(event.target.value)} className="field-input mt-2"><option value="1.2">Compact · faster export</option><option value="1.8">Balanced · recommended</option><option value="2.5">Detailed · larger archive</option></select></label><label className={`block sm:col-span-2 ${imageFormat === "png" ? "opacity-50" : ""}`}><span className="field-label">{imageFormat.toUpperCase()} quality <span className="ml-2 text-[#05c8f6]">{imageQuality}%</span></span><input type="range" min="45" max="100" step="1" value={imageQuality} onChange={(event) => setImageQuality(Number(event.target.value))} disabled={imageFormat === "png"} className="mt-3 h-2 w-full cursor-pointer accent-[#05c8f6] disabled:cursor-not-allowed" /><span className="mt-2 block text-xs leading-5 text-[#748194]">Quality applies to JPEG and WebP. PNG stays lossless. Large documents may use significant browser memory during local rendering.</span></label></div>}{tool.slug === "ocr-pdf" && <div className="mt-5 rounded-[10px] border border-[#05c8f6]/20 bg-[#05c8f6]/[0.05] p-4"><div className="flex gap-3"><ScanText className="mt-0.5 h-4 w-4 shrink-0 text-[#05c8f6]" /><p className="text-sm leading-6 text-[#9fd8e7]">OCR runs page images through a browser worker. English language data may load on first use; PDF contents are not sent to CachePDF.</p></div></div>}</div>}
           </div></div>
