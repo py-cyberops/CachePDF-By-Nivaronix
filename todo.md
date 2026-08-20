@@ -125,3 +125,8 @@
 - [ ] Validate visible focus and keyboard activation for secondary post-V1 workspace controls, including density, signature method, compression profile, and cleanup selection controls.
 - [x] Fix Document Privacy Check so a cleaned PDF no longer reports common metadata or document-date findings when it is rechecked.
 - [x] Fix Document Privacy Check so a cleaned PDF no longer reports common metadata or document-date findings when it is rechecked.
+- [x] Add visible OCR progress feedback for long local recognition operations.
+- [x] Add a pre-export quality preview for locally compressed PDFs.
+- [x] Add opt-in browser-local saving and reuse controls for drawn and typed PDF signatures.
+- [x] Validate workflow feedback, preview behavior, local signature persistence, accessibility, and release health.
+- [x] Save and report the workflow-feedback enhancement release.
