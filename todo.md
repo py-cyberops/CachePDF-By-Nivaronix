@@ -160,3 +160,7 @@
 - [x] Add Android-only CachePDF Pro entitlement foundations for the Google Play non-consumable product `cachepdf_pro` without a CachePDF account or document telemetry.
 - [x] Document Google Play Console product setup, purchase restoration, acknowledgement, signing, and release procedures without committing secrets.
 - [ ] Produce the expanded deployment and Android readiness report with a factual final verdict after device-test handoff.
+- [ ] Verify the user-pushed GitHub main branch matches the CachePDF release checkpoint.
+- [ ] Verify the committed Cloudflare Pages build, routing, headers, static output, and custom-domain readiness.
+- [ ] Report remote-branch verification and the remaining Cloudflare activation steps.
+- [x] Align GitHub Actions pnpm setup with the packageManager pin and remove deprecated action-runtime warnings.

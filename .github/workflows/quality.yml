@@ -9,14 +9,12 @@ jobs:
   web:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: pnpm
+      - run: corepack enable
+      - run: pnpm --version
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
       - run: pnpm test
@@ -26,14 +24,12 @@ jobs:
   android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: pnpm
+      - run: corepack enable
+      - run: pnpm --version
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
