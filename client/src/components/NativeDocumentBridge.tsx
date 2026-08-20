@@ -25,7 +25,8 @@ export default function NativeDocumentBridge() {
     const nativeClick = HTMLAnchorElement.prototype.click;
     HTMLAnchorElement.prototype.click = function cachePdfAndroidExport() {
       if (!this.href.startsWith("blob:") || !this.download) return nativeClick.call(this);
-      void fetch(this.href).then((response) => response.blob()).then((blob) => shareNativeExport("Export CachePDF result", this.download, blob)).catch(() => nativeClick.call(this));
+      const href = this.href; const name = this.download;
+      void fetch(href).then((response) => response.blob()).then((blob) => shareNativeExport("Save CachePDF result", name, blob)).catch(() => undefined);
     };
     return () => { cancelled = true; HTMLAnchorElement.prototype.click = nativeClick; void listener.then((item) => item.remove()); };
   }, [location, navigate, queueFiles]);

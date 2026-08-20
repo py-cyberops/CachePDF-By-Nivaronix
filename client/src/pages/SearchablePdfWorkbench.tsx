@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { defaultOutputName, requestedDownloadName } from "@/lib/outputNames";
 import { calculateOcrTextPlacement, type OcrBoundingBox } from "@/lib/ocrPlacement";
 import { loadBrowserPdf, renderPdfPageToImage } from "@/lib/pdfBrowser";
+import { isNativeAndroid, shareNativeExport } from "@/lib/nativeFiles";
 import { trackCachePdfEvent } from "@/lib/telemetry";
 import { PDFDocument, rgb } from "pdf-lib";
 import { ArrowLeft, CircleStop, Download, FilePlus2, FileSearch, FolderOpen, LoaderCircle, ScanText, ShieldCheck, UploadCloud } from "lucide-react";
@@ -108,11 +109,13 @@ export default function SearchablePdfWorkbench() {
 
   function cancel() { void workerRef.current?.terminate().catch(() => undefined); workerRef.current = null; setProgress("Stopping local OCR"); }
 
-  function download() {
+  async function download() {
     if (!result) return;
     const bytes = new Uint8Array(result.bytes.byteLength); bytes.set(result.bytes);
-    const url = URL.createObjectURL(new Blob([bytes.buffer], { type: "application/pdf" }));
-    const anchor = document.createElement("a"); anchor.href = url; anchor.download = requestedDownloadName(downloadName, result.name); document.body.appendChild(anchor); anchor.click(); anchor.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 350);
+    const name = requestedDownloadName(downloadName, result.name); const blob = new Blob([bytes.buffer], { type: "application/pdf" });
+    if (isNativeAndroid()) { await shareNativeExport("Save searchable CachePDF result", name, blob); trackCachePdfEvent("export_completed", { output: "pdf" }); return; }
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a"); anchor.href = url; anchor.download = name; document.body.appendChild(anchor); anchor.click(); anchor.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 5000);
     trackCachePdfEvent("export_completed", { output: "pdf" });
   }
 

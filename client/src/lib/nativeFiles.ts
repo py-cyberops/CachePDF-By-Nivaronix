@@ -1,12 +1,11 @@
 import { Capacitor, registerPlugin } from "@capacitor/core";
-import { Filesystem } from "@capacitor/filesystem";
-import { Share } from "@capacitor/share";
+import { Directory, Filesystem } from "@capacitor/filesystem";
 
 type NativeDocument = { uri: string; name: string; mimeType: string };
 type NativeDocumentPlugin = {
   pickDocument: () => Promise<NativeDocument>;
   consumeIncomingDocument: () => Promise<NativeDocument | null>;
-  saveExport: (options: { filename: string; mimeType: string; base64: string }) => Promise<void>;
+  saveExport: (options: { filename: string; mimeType: string; sourceUri: string }) => Promise<void>;
 };
 
 const NativeDocument = registerPlugin<NativeDocumentPlugin>("NativeDocument");
@@ -37,7 +36,11 @@ export async function consumeNativeIncomingDocument() {
 export async function shareNativeExport(title: string, filename: string, blob: Blob) {
   if (!isNativeAndroid()) return false;
   const base64 = await blobToBase64(blob);
-  await NativeDocument.saveExport({ filename, mimeType: blob.type || "application/octet-stream", base64 });
+  const path = `cachepdf-exports/${crypto.randomUUID()}-${filename}`;
+  await Filesystem.writeFile({ path, data: base64, directory: Directory.Cache, recursive: true });
+  const source = await Filesystem.getUri({ path, directory: Directory.Cache });
+  try { await NativeDocument.saveExport({ filename, mimeType: blob.type || "application/octet-stream", sourceUri: source.uri }); }
+  finally { await Filesystem.deleteFile({ path, directory: Directory.Cache }).catch(() => undefined); }
   return true;
 }
 

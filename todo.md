@@ -171,3 +171,5 @@
 - [x] Fix Android-native export so generated PDF, ZIP, image, and TXT results reliably reach a usable save/share destination.
 - [x] Fix Android launcher icon, splash, and in-app CachePDF/Nivaronix branded asset packaging.
 - [ ] Build the corrected APK and obtain focused device retest results for export and branding.
+- [ ] Replace the corrupt/crashing Android binary export bridge and verify saved PDF, ZIP, image, and TXT bytes on a device.
+- [ ] Bundle every remaining CachePDF image and visual asset referenced by the offline Android WebView.

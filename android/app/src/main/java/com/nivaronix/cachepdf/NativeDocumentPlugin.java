@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
-import android.util.Base64;
 import androidx.activity.result.ActivityResult;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -57,8 +56,8 @@ public class NativeDocumentPlugin extends Plugin {
   public void saveExport(PluginCall call) {
     String filename = call.getString("filename");
     String mimeType = call.getString("mimeType", "application/octet-stream");
-    String base64 = call.getString("base64");
-    if (filename == null || base64 == null) { call.reject("Export filename or content is missing."); return; }
+    String sourceUri = call.getString("sourceUri");
+    if (filename == null || sourceUri == null) { call.reject("Export filename or content is missing."); return; }
     Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
     intent.setType(mimeType);
@@ -70,10 +69,13 @@ public class NativeDocumentPlugin extends Plugin {
   private void writeExport(PluginCall call, ActivityResult result) {
     if (call == null || result.getData() == null || result.getData().getData() == null) { if (call != null) call.reject("Export location was not selected."); return; }
     try {
-      byte[] bytes = Base64.decode(call.getString("base64"), Base64.DEFAULT);
-      try (java.io.OutputStream output = getContext().getContentResolver().openOutputStream(result.getData().getData(), "w")) {
+      Uri source = Uri.parse(call.getString("sourceUri"));
+      java.io.InputStream input = "file".equals(source.getScheme()) ? new java.io.FileInputStream(new java.io.File(source.getPath())) : getContext().getContentResolver().openInputStream(source);
+      try (java.io.InputStream sourceInput = input; java.io.OutputStream output = getContext().getContentResolver().openOutputStream(result.getData().getData(), "w")) {
+        if (sourceInput == null) throw new java.io.IOException("CachePDF could not read the local export.");
         if (output == null) throw new java.io.IOException("Android could not open the selected destination.");
-        output.write(bytes);
+        byte[] buffer = new byte[64 * 1024]; int count;
+        while ((count = sourceInput.read(buffer)) != -1) output.write(buffer, 0, count);
       }
       call.resolve();
     } catch (Exception error) { call.reject("CachePDF could not write the export.", error); }

@@ -2,6 +2,7 @@ import DensityControl from "@/components/DensityControl";
 import SiteShell from "@/components/SiteShell";
 import { defaultOutputName, requestedDownloadName } from "@/lib/outputNames";
 import { cleanupPdfPrivacy, inspectPdfPrivacy, type PrivacyCleanupSelection, type PrivacyFinding } from "@/lib/privacyInspector";
+import { isNativeAndroid, shareNativeExport } from "@/lib/nativeFiles";
 import { trackCachePdfEvent } from "@/lib/telemetry";
 import { PDFDocument } from "pdf-lib";
 import { AlertTriangle, ArrowLeft, CheckCircle2, Check, Download, FileCheck2, FilePlus2, FolderOpen, ShieldCheck, Sparkles, UploadCloud } from "lucide-react";
@@ -46,12 +47,14 @@ export default function PrivacyCheckWorkbench() {
     } catch { trackCachePdfEvent("operation_failed", { tool: "document-privacy-check" }); toast.error("The selected cleanup actions could not complete. Your source file remains unchanged."); }
     finally { setBusy(false); }
   }
-  function download() {
+  async function download() {
     if (!result) return;
     const copy = new Uint8Array(result.bytes.byteLength); copy.set(result.bytes);
-    const url = URL.createObjectURL(new Blob([copy.buffer], { type: "application/pdf" }));
-    const anchor = document.createElement("a"); anchor.href = url; anchor.download = requestedDownloadName(downloadName, result.name); document.body.appendChild(anchor); anchor.click(); anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 350); trackCachePdfEvent("export_completed", { output: "pdf" });
+    const name = requestedDownloadName(downloadName, result.name); const blob = new Blob([copy.buffer], { type: "application/pdf" });
+    if (isNativeAndroid()) { await shareNativeExport("Save cleaned CachePDF result", name, blob); trackCachePdfEvent("export_completed", { output: "pdf" }); return; }
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a"); anchor.href = url; anchor.download = name; document.body.appendChild(anchor); anchor.click(); anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 5000); trackCachePdfEvent("export_completed", { output: "pdf" });
   }
 
   return <SiteShell><main className="bg-[#07090d]">
