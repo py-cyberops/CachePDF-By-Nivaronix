@@ -153,13 +153,13 @@
 - [x] Add native-safe local file opening, Android intent intake, sharing/export, URI handling, and back-navigation behavior without broad storage access.
 - [x] Preserve offline use where practical, document local OCR resources, and retain source-safe browser/on-device processing boundaries.
 - [x] Add debug APK and signed AAB build guidance with keystore handling that excludes secrets from source control.
-- [ ] Validate web build and Android project artifacts, then produce a device-test matrix and readiness verdict.
+- [x] Validate web build and Android project artifacts, then produce a device-test matrix and readiness verdict.
 - [x] Save and report the Capacitor Android conversion release.
 - [x] Audit and reconcile the supplied full web, Android, privacy, monetization, and Cloudflare Pages specification against the current repository.
 - [x] Prepare CachePDF for static-first Cloudflare Pages hosting while preserving only server components with verified production consumers.
 - [x] Add Android-only CachePDF Pro entitlement foundations for the Google Play non-consumable product `cachepdf_pro` without a CachePDF account or document telemetry.
 - [x] Document Google Play Console product setup, purchase restoration, acknowledgement, signing, and release procedures without committing secrets.
-- [ ] Produce the expanded deployment and Android readiness report with a factual final verdict after device-test handoff.
+- [x] Produce the expanded deployment and Android readiness report with a factual final verdict after device-test handoff.
 - [x] Verify the user-pushed GitHub main branch matches the CachePDF release checkpoint.
 - [x] Verify the committed Cloudflare Pages build, routing, headers, static output, and custom-domain readiness.
 - [x] Report remote-branch verification and the remaining Cloudflare activation steps.
@@ -170,6 +170,8 @@
 - [x] Install and select JDK 21 locally for the Capacitor filesystem Gradle toolchain requirement.
 - [x] Fix Android-native export so generated PDF, ZIP, image, and TXT results reliably reach a usable save/share destination.
 - [x] Fix Android launcher icon, splash, and in-app CachePDF/Nivaronix branded asset packaging.
-- [ ] Build the corrected APK and obtain focused device retest results for export and branding.
-- [ ] Replace the corrupt/crashing Android binary export bridge and verify saved PDF, ZIP, image, and TXT bytes on a device.
-- [ ] Bundle every remaining CachePDF image and visual asset referenced by the offline Android WebView.
+- [x] Build the corrected APK and obtain focused device retest results for export and branding.
+- [x] Replace the corrupt/crashing Android binary export bridge and verify saved PDF, ZIP, image, and TXT bytes on a device.
+- [x] Bundle every remaining CachePDF image and visual asset referenced by the offline Android WebView.
+- [x] Record the actual Android device model, Android version, and confirmed pass/fail test matrix for the final release report.
+- [x] Deliver the final CachePDF Android and web readiness report with a factual GO-style verdict.
