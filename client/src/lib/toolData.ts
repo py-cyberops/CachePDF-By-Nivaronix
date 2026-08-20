@@ -41,7 +41,7 @@ export const toolCategories: Array<{ name: string; detail: string; tools: ToolDe
     detail: "Move from image files to a sharable PDF locally.",
     tools: [
       { slug: "images-to-pdf", name: "Images → PDF", description: "Turn PNG and JPG images into one PDF document.", category: "Convert", icon: "images", state: "implemented", local: true },
-      { slug: "pdf-to-images", name: "PDF → Images", description: "Export document pages as image files.", category: "Convert", icon: "pdfimages", state: "planned", local: true },
+      { slug: "pdf-to-images", name: "PDF → Images", description: "Render selected pages as PNG files in a local ZIP archive.", category: "Convert", icon: "pdfimages", state: "implemented", local: true },
       { slug: "pdf-to-text", name: "PDF → Text", description: "Extract readable text when the PDF contains a text layer.", category: "Convert", icon: "text", state: "experimental", local: true },
     ],
   },
@@ -71,7 +71,7 @@ export const toolCategories: Array<{ name: string; detail: string; tools: ToolDe
     name: "Advanced",
     detail: "Planned extensions for deeper document inspection and retrieval.",
     tools: [
-      { slug: "ocr-pdf", name: "OCR PDF", description: "Recognize scanned text in a browser-first workflow.", category: "Advanced", icon: "ocr", state: "planned", local: true },
+      { slug: "ocr-pdf", name: "OCR PDF", description: "Recognize selected PDF pages in a browser worker and download the text.", category: "Advanced", icon: "ocr", state: "implemented", local: true },
       { slug: "extract-images", name: "Extract Images", description: "Recover embedded images from a PDF copy.", category: "Advanced", icon: "extractimages", state: "planned", local: true },
       { slug: "extract-text", name: "Extract Text", description: "Retrieve text content for downstream use.", category: "Advanced", icon: "extracttext", state: "experimental", local: true },
     ],
