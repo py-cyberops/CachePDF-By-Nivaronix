@@ -8,6 +8,7 @@ import PdfPageManager from "@/components/PdfPageManager";
 import { ToolGlyph } from "@/components/ToolGlyph";
 import { getTool, type ToolDefinition } from "@/lib/toolData";
 import { loadBrowserPdf, renderPdfPageToImage, type RasterImageFormat } from "@/lib/pdfBrowser";
+import { isNativeAndroid, pickNativeDocument, readNativeDocument, shareNativeExport } from "@/lib/nativeFiles";
 import { zipSync } from "fflate";
 import { PDFDocument, degrees, rgb, type PDFPage } from "pdf-lib";
 import {
@@ -87,13 +88,16 @@ function processingError(error: unknown, cancelled: boolean) {
   return { title: "Local export could not complete", detail: "Original unchanged. Try again or select fewer pages." };
 }
 
-function saveDownload(result: Result, requestedName: string) {
+async function saveDownload(result: Result, requestedName: string) {
   const browserBytes = new Uint8Array(result.bytes.byteLength);
   browserBytes.set(result.bytes);
-  const url = URL.createObjectURL(new Blob([browserBytes.buffer], { type: result.mime }));
+  const name = requestedDownloadName(requestedName, result.name);
+  const blob = new Blob([browserBytes.buffer], { type: result.mime });
+  if (isNativeAndroid()) { await shareNativeExport("Export CachePDF result", name, blob); trackCachePdfEvent("export_completed", { output: result.mime === "application/zip" ? "zip" : "pdf" }); return; }
+  const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = requestedDownloadName(requestedName, result.name);
+  anchor.download = name;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
@@ -101,11 +105,14 @@ function saveDownload(result: Result, requestedName: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 350);
 }
 
-function saveText(text: string, requestedName: string) {
-  const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+async function saveText(text: string, requestedName: string) {
+  const name = requestedDownloadName(requestedName, "cachepdf-ocr.txt");
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  if (isNativeAndroid()) { await shareNativeExport("Export CachePDF OCR text", name, blob); trackCachePdfEvent("export_completed", { output: "text" }); return; }
+  const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = requestedDownloadName(requestedName, "cachepdf-ocr.txt");
+  anchor.download = name;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
@@ -213,6 +220,7 @@ export default function ToolWorkbench() {
   }, [consumeFiles]);
 
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => { if (event.target.files) void ingest(event.target.files); event.target.value = ""; };
+  const openNativePicker = async () => { if (!isNativeAndroid() || isMerge || needsImages) return; const selected = await pickNativeDocument(); if (selected) await ingest([await readNativeDocument(selected)]); };
   const onDrop = (event: DragEvent<HTMLDivElement>) => { event.preventDefault(); setDragging(false); if (event.dataTransfer.files) void ingest(event.dataTransfer.files); };
   const removeFile = (index: number) => { setFiles((current) => current.filter((_, currentIndex) => currentIndex !== index)); resetResultState(); if (index === 0) resetPageState(0); };
   const moveFile = (index: number, direction: -1 | 1) => { setFiles((current) => { const next = [...current]; const target = index + direction; if (target < 0 || target >= next.length) return next; [next[index], next[target]] = [next[target], next[index]]; return next; }); };
@@ -351,7 +359,7 @@ export default function ToolWorkbench() {
           </div>
         </section>
         <section className="container grid gap-7 py-10 lg:grid-cols-[minmax(0,1fr)_300px] lg:py-14">
-          <div className="surface overflow-hidden"><div className="border-b border-white/[0.09] px-5 py-4 sm:px-7"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a7b2c1]">01 // Select document</p></div><div className="p-5 sm:p-7"><input ref={inputRef} type="file" className="hidden" accept={needsImages ? "image/png,image/jpeg,.png,.jpg,.jpeg" : "application/pdf,.pdf"} multiple={isMerge || needsImages} onChange={onFileChange} />
+          <div className="surface overflow-hidden"><div className="border-b border-white/[0.09] px-5 py-4 sm:px-7"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a7b2c1]">01 // Select document</p></div><div className="p-5 sm:p-7"><input ref={inputRef} type="file" className="hidden" accept={needsImages ? "image/png,image/jpeg,.png,.jpg,.jpeg" : "application/pdf,.pdf"} multiple={isMerge || needsImages} onClick={(event) => { if (isNativeAndroid() && !isMerge && !needsImages) { event.preventDefault(); void openNativePicker().catch(() => toast.error("Android could not open the selected document.")); } }} onChange={onFileChange} />
             {!files.length ? <div onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop} className={`drop-zone ${dragging ? "drop-zone-active" : ""}`}><span className="flex h-12 w-12 items-center justify-center rounded-[12px] border border-[#05c8f6]/25 bg-[#05c8f6]/10 text-[#05c8f6]"><UploadCloud className="h-6 w-6" /></span><h2 className="mt-5 font-display text-xl font-medium tracking-[-0.04em] text-white">{needsImages ? "Open PNG or JPG images locally" : isMerge ? "Open PDF files locally" : "Open a PDF locally"}</h2><p className="mt-2 text-sm leading-6 text-[#8794a6]">{needsImages ? "Create a new PDF from images on this device." : "Choose a file from this device. The original stays untouched."}</p><button type="button" onClick={() => inputRef.current?.click()} className="button-secondary mt-6">Choose file <FolderOpen className="h-4 w-4" /></button><p className="mt-4 font-mono text-[9px] uppercase tracking-[0.15em] text-[#697588]">Up to 100 MB per file · {needsImages ? "PNG / JPG" : "PDF"}</p></div> : <><div className="flex items-center justify-between gap-4"><div><p className="font-display text-lg font-medium tracking-[-0.04em] text-white">{files.length} {files.length === 1 ? "file open" : "files open"}</p><p className="mt-1 text-sm text-[#8794a6]">{isMerge ? "Use the arrows to set document order." : needsImages ? "Images are included in the displayed order." : "Review the controls before running the action."}</p></div><button type="button" onClick={() => inputRef.current?.click()} className="button-ghost text-sm text-[#7adff7]"><FilePlus2 className="h-4 w-4" /> Open {isMerge || needsImages ? "more files" : "another file"}</button></div><div className="mt-6 space-y-2">{files.map((file, index) => <div className="file-row" key={`${file.name}-${index}`}><span className="text-[#697689]"><GripVertical className="h-4 w-4" /></span><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] border border-white/[0.1] bg-[#0a0e14] text-[#8ee7fb]">{file.kind === "image" ? <ImageIcon className="h-4 w-4" /> : <FileText className="h-4 w-4" />}</span><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-[#e4ebf3]">{file.name}</p><p className="mt-0.5 font-mono text-[10px] text-[#7b8798]">{formatBytes(file.size)}{file.pages ? ` · ${file.pages} ${file.pages === 1 ? "page" : "pages"}` : ""}</p></div>{(isMerge || needsImages) && <div className="hidden items-center gap-1 sm:flex"><button className="icon-button-small" onClick={() => moveFile(index, -1)} disabled={index === 0} aria-label="Move file up"><ArrowUp className="h-3.5 w-3.5" /></button><button className="icon-button-small" onClick={() => moveFile(index, 1)} disabled={index === files.length - 1} aria-label="Move file down"><ArrowDown className="h-3.5 w-3.5" /></button></div>}<button className="icon-button-small text-[#f3a1a1] hover:border-[#ef8585]/50" onClick={() => removeFile(index)} aria-label={`Remove ${file.name}`}><Trash2 className="h-3.5 w-3.5" /></button></div>)}</div></>}
             {preflight && <div className={`mt-6 rounded-[12px] border p-4 ${preflight.level === "caution" ? "border-[#f7ce88]/30 bg-[#f7ce88]/[0.06]" : "border-[#05c8f6]/20 bg-[#05c8f6]/[0.05]"}`}><div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start"><div><p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#d6b675]">LOCAL RESOURCE PREFLIGHT</p><h2 className="mt-2 font-display text-lg font-medium tracking-[-0.04em] text-white">{preflight.title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#b6c1cf]">{preflight.detail}</p></div><button type="button" onClick={() => setPreflightAcknowledged(true)} className="button-secondary shrink-0 text-xs">{preflightAcknowledged ? "Preflight reviewed" : "Continue locally"}</button></div></div>}
             {hasPageManager && <PdfPageManager file={primaryFile.file} pageOrder={pageOrder} onPageOrderChange={setPageOrder} selectedPages={selectedPages} onSelectedPagesChange={setSelectedPages} pageRotations={pageRotations} onRotatePage={rotateThumb} reorderEnabled={tool.slug === "reorder-pages"} rotationEnabled={tool.slug === "rotate-pages"} selectionLabel={pageSelectionCopy} />}

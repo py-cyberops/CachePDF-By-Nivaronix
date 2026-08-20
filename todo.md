@@ -144,7 +144,19 @@
 - [x] Add a side-by-side local preview of original and generated PDF output before export.
 - [x] Validate consent, advisory, preview, result states, and source preservation across lossless and lossy flows.
 - [x] Save and report the compression quality-assurance release.
-- [ ] Review deployment configuration, production command, and canonical-domain requirements for GitHub and Cloudflare handoff.
-- [ ] Add repository documentation and deployment guidance for CachePDF by Nivaronix.
+- [x] Review deployment configuration, production command, and canonical-domain requirements for GitHub and Cloudflare handoff.
+- [x] Add repository documentation and deployment guidance for CachePDF by Nivaronix.
 - [ ] Connect and push the approved project state to github.com/py-cyberops/CachePDF-By-Nivaronix.
-- [ ] Provide the Cloudflare DNS and hosting activation steps for cachepdf.nivaronix.com.
+- [x] Provide the Cloudflare DNS and hosting activation steps for cachepdf.nivaronix.com.
+- [x] Audit CachePDF’s build, local PDF workflows, mobile browser behaviors, and supplied brand assets for Android packaging.
+- [x] Add Capacitor core, Android platform configuration, package metadata, branded Android assets, and production release settings.
+- [x] Add native-safe local file opening, Android intent intake, sharing/export, URI handling, and back-navigation behavior without broad storage access.
+- [x] Preserve offline use where practical, document local OCR resources, and retain source-safe browser/on-device processing boundaries.
+- [x] Add debug APK and signed AAB build guidance with keystore handling that excludes secrets from source control.
+- [ ] Validate web build and Android project artifacts, then produce a device-test matrix and readiness verdict.
+- [ ] Save and report the Capacitor Android conversion release.
+- [x] Audit and reconcile the supplied full web, Android, privacy, monetization, and Cloudflare Pages specification against the current repository.
+- [x] Prepare CachePDF for static-first Cloudflare Pages hosting while preserving only server components with verified production consumers.
+- [x] Add Android-only CachePDF Pro entitlement foundations for the Google Play non-consumable product `cachepdf_pro` without a CachePDF account or document telemetry.
+- [x] Document Google Play Console product setup, purchase restoration, acknowledgement, signing, and release procedures without committing secrets.
+- [ ] Produce the expanded deployment and Android readiness report with a factual final verdict after device-test handoff.

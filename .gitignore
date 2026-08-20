@@ -45,6 +45,14 @@ pids
 *.seed
 *.pid.lock
 *.bak
+android/local.properties
+android/keystore.properties
+android/*.jks
+android/*.keystore
+android/.gradle/
+android/build/
+android/app/build/
+android/captures/
 
 # Coverage directory used by tools like istanbul
 coverage/

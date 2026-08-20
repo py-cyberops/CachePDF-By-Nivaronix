@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
 import { lazy, Suspense, type ComponentType } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
+import NativeDocumentBridge from "./components/NativeDocumentBridge";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { DocumentSessionProvider } from "./contexts/DocumentSessionContext";
 import { DensityProvider } from "./contexts/DensityContext";
@@ -61,5 +62,5 @@ function ThemedApp() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><DensityProvider><DocumentSessionProvider><ThemedApp /></DocumentSessionProvider></DensityProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><DensityProvider><DocumentSessionProvider><NativeDocumentBridge /><ThemedApp /></DocumentSessionProvider></DensityProvider></ThemeProvider></ErrorBoundary>;
 }
