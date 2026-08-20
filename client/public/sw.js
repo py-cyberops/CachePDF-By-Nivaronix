@@ -1,23 +1,14 @@
 /* CachePDF app-shell service worker. It caches only public application resources; selected files
    are never read, persisted, or transmitted by this worker. */
-const CACHE = "cachepdf-shell-v2";
+const CACHE = "cachepdf-shell-v3";
 const CORE = [
   "/", "/index.html", "/manifest.webmanifest", "/sw.js",
-  "/manus-storage/cachepdf-app-icon-cyan_a023b6dd.svg",
-  "/manus-storage/cachepdf-app-icon-cyan(1)_e3f8f638.svg",
-  "/manus-storage/pasted_file_xAB1Wk_cachepdf-app-icon-cyan_c84f0276.svg",
-  "/manus-storage/cachepdf-app-icon-dark_b173d3f4.svg",
-  "/manus-storage/cachepdf-favicon_4147f495.svg",
-  "/manus-storage/cachepdf-favicon(1)_e0e89a79.svg",
-  "/manus-storage/cachepdf-horizontal-dark_e23da26a.svg",
-  "/manus-storage/cachepdf-horizontal-dark(1)_c683a4a3.svg",
-  "/manus-storage/cachepdf-horizontal-light_7626905c.svg",
-  "/manus-storage/cachepdf-mark-dark_5d8e4459.svg",
-  "/manus-storage/cachepdf-mark-light_bb8013ee.svg",
-  "/manus-storage/cachepdf-monogram-cyan_2f63f2a5.svg",
-  "/manus-storage/cachepdf-monogram-cyan(1)_b9d71293.svg",
-  "/manus-storage/cachepdf-wordmark-dark_6e1c68f6.svg",
-  "/manus-storage/cachepdf-wordmark-dark(1)_a06c6b4f.svg"
+  "/branding/cachepdf-app-icon.svg",
+  "/branding/cachepdf-app-mark.png",
+  "/branding/cachepdf-horizontal-dark.svg",
+  "/branding/cachepdf-horizontal-light.svg",
+  "/branding/nivaronix-dark-extended.svg",
+  "/branding/nivaronix-light-extended.svg"
 ];
 
 self.addEventListener("install", (event) => {
@@ -40,7 +31,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (url.origin !== self.location.origin) return;
-  const isShellResource = url.pathname.startsWith("/assets/") || url.pathname.startsWith("/manus-storage/") || ["/manifest.webmanifest", "/sw.js"].includes(url.pathname);
+  const isShellResource = url.pathname.startsWith("/assets/") || url.pathname.startsWith("/branding/") || ["/manifest.webmanifest", "/sw.js"].includes(url.pathname);
   if (!isShellResource) return;
   event.respondWith(caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
     const copy = response.clone(); caches.open(CACHE).then((cache) => cache.put(event.request, copy)); return response;

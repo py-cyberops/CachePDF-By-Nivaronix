@@ -9,11 +9,7 @@
   "background_color": "#07090d",
   "theme_color": "#07090d",
   "icons": [
-    { "src": "/manus-storage/cachepdf-favicon_4147f495.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/manus-storage/cachepdf-favicon(1)_e0e89a79.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" },
-    { "src": "/manus-storage/cachepdf-app-icon-cyan_a023b6dd.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/manus-storage/cachepdf-app-icon-cyan(1)_e3f8f638.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" },
-    { "src": "/manus-storage/pasted_file_xAB1Wk_cachepdf-app-icon-cyan_c84f0276.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/manus-storage/cachepdf-app-icon-dark_b173d3f4.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "monochrome" }
+    { "src": "/branding/cachepdf-app-mark.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/branding/cachepdf-app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
 }

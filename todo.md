@@ -179,3 +179,5 @@
 - [x] Guide cachepdf.nivaronix.com custom-domain activation and post-deployment verification.
 - [ ] Run rigorous live end-to-end validation of the deployed CachePDF web application, including public routes, core local workflows, responsive behavior, and browser-error checks.
 - [x] Fix sitemap and robots directives so all published URLs are absolute canonical CachePDF URLs accepted by Google Search Console.
+- [x] Remove the unresolved analytics template request from the static production build so CachePDF no longer requests an invalid placeholder URL.
+- [ ] Replace stale external manuscript-storage references in the web manifest and service-worker precache with bundled CachePDF branding assets.
