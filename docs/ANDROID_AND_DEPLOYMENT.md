@@ -36,7 +36,7 @@ The bundled web shell includes application JavaScript, styles, PDF worker assets
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm build
+pnpm build:pages
 pnpm exec cap sync android
 cd android
 ./gradlew assembleDebug
@@ -65,7 +65,7 @@ keyPassword=YOUR_KEY_PASSWORD
 The file and common keystore extensions are ignored by Git. Build the signed AAB:
 
 ```bash
-pnpm build
+pnpm build:pages
 pnpm exec cap sync android
 cd android
 ./gradlew bundleRelease

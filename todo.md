@@ -181,3 +181,7 @@
 - [x] Fix sitemap and robots directives so all published URLs are absolute canonical CachePDF URLs accepted by Google Search Console.
 - [x] Remove the unresolved analytics template request from the static production build so CachePDF no longer requests an invalid placeholder URL.
 - [x] Replace stale external manuscript-storage references in the web manifest and service-worker precache with bundled CachePDF branding assets.
+- [x] Audit CachePDF Android build, native file/export bridge, Play Billing configuration, signing setup, and internal-testing readiness.
+- [x] Deliver a prioritized Android release plan covering the remaining Google Play Console, billing, and device-validation work.
+- [x] Correct Android build documentation to use the static Capacitor asset build command before sync and Gradle packaging.
+- [x] Ensure the Android CachePDF Pro purchase action can load unavailable product details and launch the first purchase flow in a single user action.
