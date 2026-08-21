@@ -26,6 +26,9 @@ public class CachePdfProPlugin extends Plugin implements PurchasesUpdatedListene
   private BillingClient billingClient;
   private ProductDetails productDetails;
   private PluginCall pendingPurchase;
+  private boolean connecting;
+  private final List<Runnable> pendingConnectionActions = new ArrayList<>();
+  private final List<PluginCall> pendingConnectionCalls = new ArrayList<>();
 
   private interface ProductSuccess { void accept(ProductDetails details); }
   private interface ProductFailure { void reject(String message); }
@@ -41,7 +44,22 @@ public class CachePdfProPlugin extends Plugin implements PurchasesUpdatedListene
 
   private void connect(PluginCall call, Runnable ready) {
     if (billingClient.isReady()) { ready.run(); return; }
-    billingClient.startConnection(new BillingClientStateListener() { public void onBillingSetupFinished(BillingResult result) { if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) ready.run(); else call.reject("Google Play Billing is unavailable: " + result.getDebugMessage()); } public void onBillingServiceDisconnected() { } });
+    pendingConnectionActions.add(ready);
+    pendingConnectionCalls.add(call);
+    if (connecting) return;
+    connecting = true;
+    billingClient.startConnection(new BillingClientStateListener() {
+      public void onBillingSetupFinished(BillingResult result) {
+        List<Runnable> actions = new ArrayList<>(pendingConnectionActions);
+        List<PluginCall> calls = new ArrayList<>(pendingConnectionCalls);
+        pendingConnectionActions.clear();
+        pendingConnectionCalls.clear();
+        connecting = false;
+        if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) { for (Runnable action : actions) action.run(); }
+        else { for (PluginCall pendingCall : calls) pendingCall.reject("Google Play Billing is unavailable: " + result.getDebugMessage()); }
+      }
+      public void onBillingServiceDisconnected() { connecting = false; }
+    });
   }
 
   private void loadProduct(ProductSuccess success, ProductFailure failure) {

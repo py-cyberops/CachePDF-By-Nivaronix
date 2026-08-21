@@ -167,6 +167,16 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "pdf-engine": ["pdf-lib"],
+          "pdf-renderer": ["pdfjs-dist"],
+          "ocr-engine": ["tesseract.js"],
+          "archive-engine": ["fflate"],
+        },
+      },
+    },
   },
   server: {
     host: true,

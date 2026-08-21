@@ -41,4 +41,12 @@ describe("CachePDF technical SEO", () => {
     expect(serviceWorker).toContain('url.pathname.startsWith("/branding/")');
     expect(`${manifest}\n${serviceWorker}`).not.toContain("/manus-storage/");
   });
+
+  it("preserves mobile browser zoom controls", () => {
+    const html = readFileSync(path.resolve(process.cwd(), "client/index.html"), "utf8");
+
+    expect(html).toContain('content="width=device-width, initial-scale=1.0"');
+    expect(html).not.toContain("maximum-scale");
+    expect(html).not.toContain("user-scalable=no");
+  });
 });

@@ -36,7 +36,7 @@ public class NativeDocumentPlugin extends Plugin {
   private void handleDocument(PluginCall call, ActivityResult result) {
     if (call == null || result.getData() == null || result.getData().getData() == null) { if (call != null) call.reject("No document was selected."); return; }
     Uri uri = result.getData().getData();
-    try { getContext().getContentResolver().takePersistableUriPermission(uri, result.getData().getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION); } catch (SecurityException ignored) { }
+    try { getContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION); } catch (SecurityException ignored) { }
     call.resolve(describe(uri));
   }
 
@@ -70,8 +70,7 @@ public class NativeDocumentPlugin extends Plugin {
     if (call == null || result.getData() == null || result.getData().getData() == null) { if (call != null) call.reject("Export location was not selected."); return; }
     try {
       Uri source = Uri.parse(call.getString("sourceUri"));
-      java.io.InputStream input = "file".equals(source.getScheme()) ? new java.io.FileInputStream(new java.io.File(source.getPath())) : getContext().getContentResolver().openInputStream(source);
-      try (java.io.InputStream sourceInput = input; java.io.OutputStream output = getContext().getContentResolver().openOutputStream(result.getData().getData(), "w")) {
+      try (java.io.InputStream sourceInput = "file".equals(source.getScheme()) ? new java.io.FileInputStream(new java.io.File(source.getPath())) : getContext().getContentResolver().openInputStream(source); java.io.OutputStream output = getContext().getContentResolver().openOutputStream(result.getData().getData(), "w")) {
         if (sourceInput == null) throw new java.io.IOException("CachePDF could not read the local export.");
         if (output == null) throw new java.io.IOException("Android could not open the selected destination.");
         byte[] buffer = new byte[64 * 1024]; int count;

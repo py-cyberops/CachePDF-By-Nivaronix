@@ -185,3 +185,17 @@
 - [x] Deliver a prioritized Android release plan covering the remaining Google Play Console, billing, and device-validation work.
 - [x] Correct Android build documentation to use the static Capacitor asset build command before sync and Gradle packaging.
 - [x] Ensure the Android CachePDF Pro purchase action can load unavailable product details and launch the first purchase flow in a single user action.
+- [x] Establish and validate a cross-platform quality baseline for CachePDF web and Android functionality, privacy, accessibility, security, performance, and release readiness.
+- [x] Resolve actionable web quality gaps found during the hardening pass.
+- [x] Strengthen the web pricing route as a processing-led local-access policy ledger rather than a sparse plan-card page.
+- [x] Split heavyweight document-engine dependencies into cacheable production chunks to reduce CachePDF’s initial web payload.
+- [x] Prevent Android-only Capacitor bridge code from loading in the standard browser runtime before it is needed.
+- [x] Remove the browser zoom restriction from the web viewport configuration to preserve mobile accessibility controls.
+- [x] Remove unused account and data-client bootstrap code from CachePDF’s static browser entry point to reduce initial-load cost and avoid unnecessary API traffic.
+- [x] Upgrade the production dependency flagged by the high-severity security advisory and re-run the dependency audit.
+- [x] Resolve actionable Android quality gaps found during the hardening pass.
+- [x] Correct the Android persistable URI permission flag handling so debug lint passes without suppressions.
+- [x] Reduce actionable Android launcher-icon and project-resource lint warnings while preserving the device-validated CachePDF branding.
+- [x] Close Android export streams on every path and declare an explicit no-backup data-extraction policy for Android 12 and later.
+- [x] Serialize concurrent Android Play Billing connection requests so initial status and product queries cannot race on app launch.
+- [x] Deliver an evidence-based cross-platform quality report with external validation dependencies clearly stated.

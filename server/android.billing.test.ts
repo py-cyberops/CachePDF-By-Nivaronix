@@ -19,4 +19,11 @@ describe("CachePDF Android Play Billing bridge", () => {
     expect(source).toContain("CachePDF Pro does not currently have an available purchase offer.");
     expect(source).toContain("Google Play purchases are unavailable:");
   });
+
+  it("shares one initial Billing connection across concurrent plugin calls", () => {
+    expect(source).toContain("private boolean connecting;");
+    expect(source).toContain("private final List<Runnable> pendingConnectionActions");
+    expect(source).toContain("if (connecting) return;");
+    expect(source).toContain("for (Runnable action : actions) action.run();");
+  });
 });

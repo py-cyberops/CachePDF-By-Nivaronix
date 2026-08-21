@@ -5,9 +5,8 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
-import { lazy, Suspense, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
-import NativeDocumentBridge from "./components/NativeDocumentBridge";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 import { DocumentSessionProvider } from "./contexts/DocumentSessionContext";
 import { DensityProvider } from "./contexts/DensityContext";
@@ -30,6 +29,21 @@ const Support = lazy(() => import("./pages/Support"));
 const Advertise = lazy(() => import("./pages/Advertise"));
 const PrivateTools = lazy(() => import("./pages/PrivateTools"));
 const EditorialPolicy = lazy(() => import("./pages/EditorialPolicy"));
+const NativeDocumentBridge = lazy(() => import("./components/NativeDocumentBridge"));
+
+type CapacitorWindow = Window & { Capacitor?: { getPlatform?: () => string } };
+
+function isAndroidNativeRuntime() {
+  if (typeof window === "undefined") return false;
+  return (window as CapacitorWindow).Capacitor?.getPlatform?.() === "android";
+}
+
+function NativeBridgeLoader() {
+  const [androidRuntime, setAndroidRuntime] = useState(isAndroidNativeRuntime);
+  useEffect(() => { setAndroidRuntime(isAndroidNativeRuntime()); }, []);
+  if (!androidRuntime) return null;
+  return <Suspense fallback={null}><NativeDocumentBridge /></Suspense>;
+}
 
 function LazyRoute({ component: Component }: { component: ComponentType }) {
   return <Suspense fallback={<main className="flex min-h-screen items-center justify-center bg-[#07090d] text-[#a9b6c6]"><div className="font-mono text-[10px] uppercase tracking-[0.16em]">Opening CachePDF…</div></main>}><Component /></Suspense>;
@@ -62,5 +76,5 @@ function ThemedApp() {
 }
 
 export default function App() {
-  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><DensityProvider><DocumentSessionProvider><NativeDocumentBridge /><ThemedApp /></DocumentSessionProvider></DensityProvider></ThemeProvider></ErrorBoundary>;
+  return <ErrorBoundary><ThemeProvider defaultTheme="dark" switchable><DensityProvider><DocumentSessionProvider><NativeBridgeLoader /><ThemedApp /></DocumentSessionProvider></DensityProvider></ThemeProvider></ErrorBoundary>;
 }
